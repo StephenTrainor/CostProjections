@@ -1,0 +1,7 @@
+/frontend/.env
+/frontend/build
+/frontend/coverage
+/frontend/node_modules
+
+/backend/.env
+/backend/node_modules

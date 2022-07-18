@@ -1,0 +1,161 @@
+body {
+  margin:0;
+}
+
+h1 {
+  font-family: 'Lato', sans-serif;
+  font-weight:300;
+  letter-spacing: 2px;
+  font-size:48px;
+}
+
+p {
+  font-family: 'Lato', sans-serif;
+  letter-spacing: 1px;
+  font-size:14px;
+  color: #333333;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.overflow {
+  max-height: 85%;
+  margin: 0.5em;
+  overflow: auto;
+}
+
+.mh {
+  height: 100%;
+}
+
+.stopOverlap {
+  margin: 0.1em;
+  border-radius: 20px;
+}
+
+a {
+  color: blue;
+}
+
+a:visited {
+  text-decoration: none;
+  color: blue;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: blue;
+}
+
+.link {
+  text-align: center;
+  margin: 0.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.paragraph {
+  text-align: center;
+  font-weight: normal;
+}
+
+.userInput {
+  width: 280px;
+  text-align: left;
+}
+
+.userInputContainer {
+  margin-top: 1em;
+}
+
+.shortText {
+  width: 320px;
+  display: flex;
+  flex-wrap: wrap;
+  text-align: center;
+  font-weight: normal;
+}
+
+.div {
+  margin: 0.5em;
+  display: flex;
+  justify-content: center;
+}
+
+.flexBox {
+  display: flex;
+  flex-direction: row;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.top {
+  height: 10%;
+  margin: 0.2em;
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.header1 {
+  text-align: center;
+  color: black;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.header {
+  text-align: center;
+}
+
+.ct {
+  text-align: center;
+}
+
+.footer {
+  width: 100%;
+}
