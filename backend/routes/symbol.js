@@ -3,9 +3,9 @@ var router = express.Router();
 var polygon = require('../api/polygon');
 
 router.get("/:symbol", async (req, res, next) => {
-    const response = await polygon.getSymbols(req.params.symbol);
+    const polygonGetTickerSymbolsResponse = await polygon.fetchTickerSymbols(req.params.symbol);
 
-    res.json(response);
+    res.json(polygonGetTickerSymbolsResponse);
 });
 
 

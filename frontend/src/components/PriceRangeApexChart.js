@@ -2,14 +2,14 @@ import ReactApexChart from 'react-apexcharts';
 import useWindowDimensions from '../hooks/useWindowDimensions';
 
 const PriceRangeApexChart = (props) => {
-    const { height, width } = useWindowDimensions();
+    const { height: deviceHeight, width: deviceWidth } = useWindowDimensions();
     const { calculation, latestPrice } = props;
     const { option, symbol } = props.state;
     const avgCost = parseInt(props.state.avgCost, 10);
     const targetAvgCost = parseInt(props.state.targetAvgCost, 10);
 
-    const minWidth = 180;
-    const minHeight = 100;
+    const minChartWidth = 180;
+    const minChartHeight = 100;
 
     const previousAvgColor = '#808080';
     const newAvgColor = '#58bc08';
@@ -22,7 +22,7 @@ const PriceRangeApexChart = (props) => {
             data: [
                 {
                 x: symbol.toUpperCase(),
-                y: [avgCost, latestPrice],
+                y: (avgCost < latestPrice) ? [avgCost, latestPrice] : [latestPrice, avgCost],
                 goals: [
                     {
                         name: 'Previous Average Cost',
@@ -52,8 +52,8 @@ const PriceRangeApexChart = (props) => {
                 max: ((avgCost >= latestPrice) ? avgCost : latestPrice) + (Math.abs(latestPrice - avgCost) * 0.1),
             },
             chart: {
-                height: minHeight + height / 13.34,
-                width: minWidth + width / 3,
+                height: minChartHeight + deviceHeight / 13.34,
+                width: minChartWidth + deviceWidth / 3,
                 type: 'rangeBar',
             },
             plotOptions: {

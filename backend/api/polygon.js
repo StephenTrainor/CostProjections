@@ -13,38 +13,31 @@ const getPolygonApiKeys = () => {
     return API_KEY.split(',');
 }
 
-var apiKey = 0;
-var apiKeys = getPolygonApiKeys();
+var currentPolygonApiKeyIndex = 0;
+var polygonApiKeys = getPolygonApiKeys();
 
-const get_response = async (url) => {
-    try {
-        var response = await axios.get(url, { params: {
-            apiKey: apiKeys[apiKey]
-        } });
-    } catch (error) {
-        console.log(error);
-        apiKey = (apiKey + 1) % apiKeys.length;
-
-        response = {
-            data: {
-                status: error.response.status,
-                statusMessage: error.response.statusText,
-                results: [],
-            },
-        };
-    }
-
-    if (response) {
-        return response.data;
-    }
-};
-
-const getSymbols = async (symbol) => {
+const fetchTickerSymbols = async (symbol) => {
     const API_URL = `https://api.polygon.io/v3/reference/tickers?market=stocks&search=${symbol}&active=true&sort=ticker&order=asc&limit=100`;
 
-    return await get_response(API_URL);
+    try {
+        const fetchTickerSymbolsResponse = await axios.get(API_URL, {
+            params: {
+                apiKey: polygonApiKeys[currentPolygonApiKeyIndex]
+            }
+        });
+
+        return fetchTickerSymbolsResponse.data;
+    } catch (error) {
+        currentPolygonApiKeyIndex = (currentPolygonApiKeyIndex + 1) % polygonApiKeys.length;
+
+        return {
+            status: error.response.status,
+            statusMessage: error.response.statusText,
+            results: []
+        };
+    }
 };
 
 module.exports = {  
-    getSymbols: getSymbols,
+    fetchTickerSymbols: fetchTickerSymbols,
 }

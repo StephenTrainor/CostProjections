@@ -6,20 +6,20 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AutoCompleteField = (props) => {
-    const [data, setData] = useState();
-    const [last, setLast] = useState('');
-    const [value, setValue] = useState(null);
-    const [symbol, setSymbol] = useState('');
-    const [fullNames, setFullNames] = useState([]);
+    const [tickerSymbols, setTickerSymbols] = useState();
+    const [fullCompanyNames, setFullCompanyNames] = useState([]);
+    const [selectedCompanyName, setSelectedCompanyName] = useState(null);
+    const [previousTickerSymbol, setPreviousTickerSymbol] = useState('');
+    const [selectedTickerSymbol, setSelectedTickerSymbol] = useState('');
 
-    const getResponse = async (symbol) => {
-        const SYMBOL_API_URL = `http://127.0.0.1:9000/symbol/${symbol}`;
+    const fetchTickerSymbols = async (symbol) => {
+        const backendTickerSymbolsApiUrl = `http://127.0.0.1:9000/symbol/${symbol}`;
 
         try {
-            var response = await axios.get(SYMBOL_API_URL, { params: {} });
+            var getTickerSymbolsResponse = await axios.get(backendTickerSymbolsApiUrl);
         } catch (error) {
             if (error.response.status !== 429) {
-                response = {
+                getTickerSymbolsResponse = {
                     data: {
                         statusCode: error.response.status,
                         statusMessage: error.response.statusText,
@@ -29,63 +29,63 @@ const AutoCompleteField = (props) => {
             }
         }
 
-        if (response) {
-            setData({
-                ...response.data
+        if (getTickerSymbolsResponse) {
+            setTickerSymbols({
+                ...getTickerSymbolsResponse.data
             });
         }
     }
 
     useEffect(() => {
-        if (symbol) {
-            if (!data || symbol !== last) {
-                getResponse(symbol);
-                setLast(symbol);
+        if (selectedTickerSymbol) {
+            if (!tickerSymbols || selectedTickerSymbol !== previousTickerSymbol) {
+                fetchTickerSymbols(selectedTickerSymbol);
+                setPreviousTickerSymbol(selectedTickerSymbol);
             }
         }
-    }, [setLast, data, last, symbol]);
+    }, [setPreviousTickerSymbol, tickerSymbols, previousTickerSymbol, selectedTickerSymbol]);
 
     useEffect(() => {
-        if (!data || (data && data.status !== "OK")) {return};
+        if (!tickerSymbols || (tickerSymbols && tickerSymbols.status !== "OK")) {return};
 
-        setFullNames(
-            data.results.map((result) => (
+        setFullCompanyNames(
+            tickerSymbols.results.map((result) => (
                 `${result.ticker} (${result.name})`
             ))
         )
-    }, [data]);
+    }, [tickerSymbols]);
 
     return (
         <Autocomplete 
             freeSolo
             disablePortal
             id="symbol"
-            value={value || props.default}
+            value={selectedCompanyName || props.defaultTickerSymbol}
             onChange={(event, newValue) => {
-                setValue(newValue);
+                setSelectedCompanyName(newValue);
                 
                 if (newValue) {
-                    let symbol = newValue.split(' ')[0];
+                    let selectedTickerSymbol = newValue.split(' ')[0]; // split on the space to extract ticker symbol out of full name
 
-                    setLast(symbol);
-                    setSymbol(symbol);
-                    props.changeState(symbol);
+                    setPreviousTickerSymbol(selectedTickerSymbol);
+                    setSelectedTickerSymbol(selectedTickerSymbol);
+                    props.externalSetSymbol(selectedTickerSymbol);
                 }
             }}
             error={props.errors.symbol}
             helperText={props.errors.symbolErrorText}
-            options={(data && data.status === "OK") ? fullNames : []}
+            options={(tickerSymbols && tickerSymbols.status === "OK") ? fullCompanyNames : []}
             className={props.className}
             renderInput={(params) => 
             <TextField 
                 {...params} 
                 onChange={(event) => {
-                        setSymbol(event.target.value);
+                        setSelectedTickerSymbol(event.target.value);
                     }
                 } 
                 variant="outlined" 
                 label="Symbol or Company Name" 
-                required={props.required}
+                required={props.requiredInputField}
                 error={props.errors.symbol}
                 helperText={props.errors.symbolErrorText}
             />}
@@ -94,16 +94,15 @@ const AutoCompleteField = (props) => {
 };
 
 AutoCompleteField.defaultProps = {
-    ticker: '',
-    default: '',
+    defaultTickerSymbol: '',
     className: '',
-    required: true,
+    requiredInputField: true,
     errors: {
         symbol: false,
         symbolErrorText: '',
     },
-    errorsUpdate: () => {},
-    changeState: () => {},
+    updateErrors: () => {},
+    externalSetSymbol: () => {},
 }
 
 export default AutoCompleteField;

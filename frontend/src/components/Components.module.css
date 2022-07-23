@@ -3,6 +3,7 @@ a {
     text-align: center;
     margin: 0.2rem;
     margin-bottom: 0.4rem;
+    text-decoration: none;
 }
 
 a:visited {

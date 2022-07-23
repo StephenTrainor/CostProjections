@@ -2,11 +2,11 @@ import ReactApexChart from 'react-apexcharts';
 import useWindowDimensions from '../hooks/useWindowDimensions';
 
 const GainLossStackedApexChart = (props) => {
-    const { height, width } = useWindowDimensions();
+    const { height: deviceHeight, width: deviceWidth } = useWindowDimensions();
     const { symbol, losingPositions, gainingPositions } = props.currentAirtableRecord.fields;
     
-    const minWidth = 180;
-    const minHeight = 120;
+    const minDeviceWidth = 180;
+    const minDeviceHeight = 120;
 
     const state = {
         series: [{
@@ -20,8 +20,8 @@ const GainLossStackedApexChart = (props) => {
         options: {
             colors: ['#16c25d', '#e12f2f'],
             chart: {
-                height: minHeight + height / 15,
-                width: minWidth + width / 3,
+                height: minDeviceHeight + deviceHeight / 15,
+                width: minDeviceWidth + deviceWidth / 3,
                 type: 'bar',
                 stacked: true,
                 stackType: '100%'

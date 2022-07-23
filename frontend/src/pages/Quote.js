@@ -9,6 +9,7 @@ import FormatDollar from '../components/FormatDollar';
 import styles from './Pages.module.css';
 
 const Quote = () => {
+    const HOME_PAGE_URL = "/";
     const BACKEND_BASE_URL = "http://127.0.0.1:9000";
     const [updatedAirtableRecords, setUpdatedAirtableRecords] = useState(false);
     const [currentAirtableRecord, setCurrentAirtableRecord] = useState();
@@ -19,13 +20,13 @@ const Quote = () => {
     const navigate = useNavigate();
     var { state } = useLocation();
 
-    const usd = (val, precision) => {
+    const round = (val, precision) => {
         let places = Math.pow(10, precision);
 
         return Math.round(val * places) / places;
     };
 
-    const averageCostAchievable = (currentAvgCost, targetAvgCost, latestPrice) => {
+    const isAverageCostAchievable = (currentAvgCost, targetAvgCost, latestPrice) => {
         if (currentAvgCost <= targetAvgCost && targetAvgCost <= latestPrice) {
             return true;
         }
@@ -35,7 +36,7 @@ const Quote = () => {
         return false;
     };
 
-    const fixRequest = () => {
+    const redirectInvalidTargetAvgCost = () => {
         state = {
             ...state,
             edit: true,
@@ -43,35 +44,34 @@ const Quote = () => {
             targetErrorText: 'Invalid Target Average Cost',
         };
 
-        navigate("/", { state });
+        navigate(HOME_PAGE_URL, { state });
     }
 
-    const fixSymbol = () => {
+    const redirectInvalidTickerSymbol = () => {
         state = {
             ...state,
             symbol: true,
             symbolErrorText: 'Invalid Symbol',
         };
 
-        navigate("/", { state });
+        navigate(HOME_PAGE_URL, { state });
     }
 
-    const editRequest = (event) => {
+    const redirectEditFormRequest = (event) => {
         event.preventDefault();
 
         state = {
             ...state,
             edit: true,
-            targetAvgCost: false,
         };
 
-        navigate("/", { state });
+        navigate(HOME_PAGE_URL, { state });
     }
 
-    const goBack = (event) => {
+    const redirectToHome = (event) => {
         event.preventDefault();
 
-        navigate("/");
+        navigate(HOME_PAGE_URL);
     }
 
     const fetchAirtableRecords = async () => {
@@ -175,7 +175,7 @@ const Quote = () => {
         }
     };
     
-    const getResponse = async () => {
+    const fetchStockData = async () => {
         const STOCK_QUOTE_URL = `${BACKEND_BASE_URL}/quote/${state.symbol}`;
 
         try {
@@ -206,7 +206,7 @@ const Quote = () => {
         }
 
         if (!data && state && state.symbol) {
-            getResponse();
+            fetchStockData();
         }
 
         if (!updatedAirtableRecords && currentAirtableRecord) {
@@ -238,7 +238,7 @@ const Quote = () => {
                     setCalculation(newAverageCost);
                 }
                 else if (state.option === "CNP") {
-                    if (averageCostAchievable(avgCost, targetAvgCost, latestPrice)) {
+                    if (isAverageCostAchievable(avgCost, targetAvgCost, latestPrice)) {
                         const numerator = shares * (avgCost - targetAvgCost);
                         const denominator = targetAvgCost - latestPrice;
 
@@ -248,15 +248,15 @@ const Quote = () => {
                         setCalculation(sharesNeeded);
                     }
                     else {
-                        fixRequest();
+                        redirectInvalidTargetAvgCost();
                     }
                 }
             }
             else if (data.statusCode === 404) {
-                fixSymbol();
+                redirectInvalidTickerSymbol();
             }
         }
-    }, [data, fixSymbol, fixRequest, getResponse, fetchAirtableRecords]);
+    }, [data, redirectInvalidTickerSymbol, redirectInvalidTargetAvgCost, fetchStockData, fetchAirtableRecords]);
 
     return (
         <>
@@ -282,7 +282,7 @@ const Quote = () => {
                 :
                     <FormatDollar 
                         number={(data) ? calculation * data.latestPrice : calculation}
-                        postText={` / ${usd(calculation, 4)} shares`}
+                        postText={` / ${round(calculation, 4)} shares`}
                     />
                 }
                 <div className={styles.centeredContainer}>
@@ -293,13 +293,13 @@ const Quote = () => {
                                     number={(state.cash) ? state.cash : state.newShares}
                                     prefix={(state.cash) ? "$" : ""}
                                     preText={`Purchasing `}
-                                    postText={`${(state.newShares) ? " share(s)" : ""} of ${state.symbol.toUpperCase()} will ${(change < 0) ? "decrease" : "increase"} your average cost by $${usd(((change < 0) ? change * -1 : change), 2)}/share at the current price of $${(data) ? usd(data.latestPrice, 2) : 0}`}
+                                    postText={`${(state.newShares) ? " share(s)" : ""} of ${state.symbol.toUpperCase()} will ${(change < 0) ? "decrease" : "increase"} your average cost by $${round(((change < 0) ? change * -1 : change), 2)}/share at the current price of $${(data) ? round(data.latestPrice, 2) : 0}`}
                                 />
                             : 
                                 <FormatDollar 
                                     number={(data) ? calculation * data.latestPrice : calculation}
-                                    preText={`Changing your average cost to $${usd(parseInt(state.targetAvgCost, 10), 2)} requires `}
-                                    postText={` or ${usd(calculation, 4)} shares at the current price of $${(data) ? usd(data.latestPrice, 2) : 0}`}
+                                    preText={`Changing your average cost to $${round(parseInt(state.targetAvgCost, 10), 2)} requires `}
+                                    postText={` or ${round(calculation, 4)} shares at the current price of $${(data) ? round(data.latestPrice, 2) : 0}`}
                                 />
                         }
                     </div>
@@ -310,7 +310,7 @@ const Quote = () => {
                     <Button
                         type="submit"
                         variant="contained"
-                        onClick={(event) => {editRequest(event)}}
+                        onClick={(event) => {redirectEditFormRequest(event)}}
                     >
                         Edit Request
                     </Button>
@@ -319,7 +319,7 @@ const Quote = () => {
                     <Button
                         type="submit"
                         variant="contained"
-                        onClick={(event) => {goBack(event)}}
+                        onClick={(event) => {redirectToHome(event)}}
                     >
                         New Request
                     </Button>

@@ -2,11 +2,11 @@ import ReactApexChart from "react-apexcharts";
 import useWindowDimensions from '../hooks/useWindowDimensions';
 
 const AllTimeVisitsApexChart = (props) => {
-    const { height, width } = useWindowDimensions();
+    const { height: deviceHeight, width: deviceWidth } = useWindowDimensions();
     const { airtableRecords }  = props;
 
-    const minWidth = 180;
-    const minHeight = 200;
+    const minChartWidth = 180;
+    const minChartHeight = 200;
 
     const state = {
         series: [{
@@ -21,11 +21,11 @@ const AllTimeVisitsApexChart = (props) => {
             colors: ['#e12f2f', '#16c25d'],
             chart: {
                 type: 'bar',
-                height: minHeight + height / 10,
-                width: minWidth + width / 3,
+                height: minChartHeight + deviceHeight / 10,
+                width: minChartWidth + deviceWidth / 3,
                 stacked: true,
                 toolbar: {
-                    show:true
+                    show: true
                 },
                 zoom: {
                     enabled: false
@@ -60,7 +60,6 @@ const AllTimeVisitsApexChart = (props) => {
         return b.fields.allTimeVisits - a.fields.allTimeVisits;
     });
 
-    // for (let airtableRecord of airtableRecords) {
     for (let i = 0; i < 6; i++) {
         if (airtableRecords[i] === undefined) {break}
 

@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var iex = require('../api/iex');
+var iexCloud = require('../api/iexCloud');
 
 router.get("/:symbol", async (req, res, next) => {
-    const response = await iex.stockQuote(req.params.symbol);
+    const iexCloudGetStockQuoteResponse = await iexCloud.fetchStockQuote(req.params.symbol);
 
-    res.json(response);
+    res.json(iexCloudGetStockQuoteResponse);
 });
 
 module.exports = router;

@@ -1,7 +1,7 @@
 import NumberFormat from 'react-number-format';
 import styles from './Components.module.css';
 
-const myRound = (number, precision = 2) => {
+const round = (number, precision = 2) => {
     let places = Math.pow(10, precision);
 
     return Math.round(number * places) / places;
@@ -10,7 +10,7 @@ const myRound = (number, precision = 2) => {
 const FormatDollar = (props) => {
     return (
         <NumberFormat 
-            value={myRound(props.number, 2)}
+            value={round(props.number, 2)}
             prefix={props.prefix}
             thousandSeparator
             displayType="text"

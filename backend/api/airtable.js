@@ -1,22 +1,30 @@
 require('dotenv').config();
 var axios = require('axios')
 
-const AIRTABLE_BASE_URL = "https://api.airtable.com/v0/app7hfcC8xLOdgVDf/Projects";
+const airtableBaseUrl = "https://api.airtable.com/v0/app7hfcC8xLOdgVDf/Projects";
 
-const getAirtableApiKey = () => {
-    const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY;
+const retrieveAirtableApiKey = () => {
+    const airtableApiKey = process.env.AIRTABLE_API_KEY;
 
-    if (AIRTABLE_API_KEY === undefined) {
+    if (airtableApiKey === undefined) {
         console.log("AIRTABLE_API_KEY hasn't been set. Define the environment variable and try again.");
         return "";
     }
 
-    return AIRTABLE_API_KEY;
+    return airtableApiKey;
 };
 
-const fetchAllAirtableFields = async () => {
+const fetchAllAirtableRecords = async () => {
     try {
-        var response = await axios.get(`${AIRTABLE_BASE_URL}?api_key=${getAirtableApiKey()}`, { params: {} });
+        const getAllFieldsResponse = await axios({
+            url: airtableBaseUrl,
+            method: 'get',
+            params: {
+                api_key: retrieveAirtableApiKey()
+            }
+        });
+
+        return getAllFieldsResponse.data;
     } catch (error) {
         return {
             statusCode: error.response.status,
@@ -24,23 +32,23 @@ const fetchAllAirtableFields = async () => {
             records: [],
         };
     }
-
-    return response.data;
 };
 
 const postAirtableRecord = async (postParams) => {
     try {
-        var response = await axios({
-            url: AIRTABLE_BASE_URL,
+        const postRecordResponse = await axios({
+            url: airtableBaseUrl,
             method: 'post',
             data: JSON.stringify(postParams),
             headers: {
                 'Content-Type': 'application/json'
             },
             params: {
-                api_key: getAirtableApiKey()
+                api_key: retrieveAirtableApiKey()
             }
-        })
+        });
+
+        return postRecordResponse.data;
     } catch (error) {
         return {
             statusCode: error.response.status,
@@ -48,23 +56,23 @@ const postAirtableRecord = async (postParams) => {
             records: [],
         }
     }
-
-    return response.data;
 };
 
 const patchAirtableRecord = async (patchParams) => {
     try {
-        var response = await axios({
-            url: AIRTABLE_BASE_URL,
+        const patchRecordResponse = await axios({
+            url: airtableBaseUrl,
             method: 'patch',
             data: JSON.stringify(patchParams),     
             headers: {
                 'Content-Type': 'application/json'
             },
             params: {
-                api_key: getAirtableApiKey()
+                api_key: retrieveAirtableApiKey()
             }
         });
+
+        return patchRecordResponse.data;
     } catch (error) {
         return {
             statusCode: error.response.status,
@@ -72,12 +80,10 @@ const patchAirtableRecord = async (patchParams) => {
             records: [],
         }
     }
-
-    return response.data;
 };
 
 module.exports = {
-    fetchAllAirtableFields: fetchAllAirtableFields,
-    patchAirtableField: patchAirtableRecord,
+    fetchAllAirtableRecords: fetchAllAirtableRecords,
+    patchAirtableRecord: patchAirtableRecord,
     postAirtableRecord: postAirtableRecord,
 };
