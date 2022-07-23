@@ -1,5 +1,5 @@
 import NumberFormat from 'react-number-format';
-import styles from '../App.module.css';
+import styles from './Components.module.css';
 
 const myRound = (number, precision = 2) => {
     let places = Math.pow(10, precision);
@@ -14,7 +14,7 @@ const FormatDollar = (props) => {
             prefix={props.prefix}
             thousandSeparator
             displayType="text"
-            renderText={(value) => <h3 className={styles.paragraph}>{props.preText}{value}{props.postText}</h3>}
+            renderText={(value) => <h3 className={styles.removeBold}>{props.preText}{value}{props.postText}</h3>}
         />
     )
 };

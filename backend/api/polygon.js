@@ -22,6 +22,7 @@ const get_response = async (url) => {
             apiKey: apiKeys[apiKey]
         } });
     } catch (error) {
+        console.log(error);
         apiKey = (apiKey + 1) % apiKeys.length;
 
         response = {

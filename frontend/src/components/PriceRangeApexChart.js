@@ -1,7 +1,7 @@
 import ReactApexChart from 'react-apexcharts';
 import useWindowDimensions from '../hooks/useWindowDimensions';
 
-const ApexChart = (props) => {
+const PriceRangeApexChart = (props) => {
     const { height, width } = useWindowDimensions();
     const { calculation, latestPrice } = props;
     const { option, symbol } = props.state;
@@ -13,8 +13,8 @@ const ApexChart = (props) => {
 
     const previousAvgColor = '#808080';
     const newAvgColor = '#58bc08';
-    const latestPriceColor = '#00203F';
-    const rangeColor = '#ffffff'; // old #0693E3
+    const latestPriceColor = '#a0a0a0';
+    const rangeColor = '#f0ffff';
 
     const state = {
         series: [{
@@ -62,11 +62,6 @@ const ApexChart = (props) => {
                 }
             },
             colors: [rangeColor],
-            dataLabels: {
-                formatter: function(val, opt) {
-                    return symbol.toUpperCase();
-                }
-            },
             legend: {
                 show: true,
                 showForSingleSeries: true,
@@ -74,13 +69,23 @@ const ApexChart = (props) => {
                 markers: {
                         fillColors: [rangeColor, previousAvgColor, latestPriceColor, newAvgColor]
                 }
+            },
+            tooltip: {
+                theme: 'dark'
             }
         },
     };
 
     return (
-        <ReactApexChart options={state.options} series={state.series} type={state.options.chart.type} height={state.options.chart.height} width={state.options.chart.width} />
+        <ReactApexChart 
+            series={state.series} 
+            options={state.options} 
+            type={state.options.chart.type} 
+            width={state.options.chart.width} 
+            height={state.options.chart.height} 
+            tooltip={state.options.tooltip}
+        />
     );
 };
 
-export default ApexChart;
+export default PriceRangeApexChart;

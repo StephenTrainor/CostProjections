@@ -13,8 +13,7 @@ const AutoCompleteField = (props) => {
     const [fullNames, setFullNames] = useState([]);
 
     const getResponse = async (symbol) => {
-        const SYMBOL_API_URL = `http://localhost:9000/symbol/${symbol}`;
-        // const SYMBOL_API_URL = `http://{IP_ADDRESS}:9000/symbol/${symbol}`;
+        const SYMBOL_API_URL = `http://127.0.0.1:9000/symbol/${symbol}`;
 
         try {
             var response = await axios.get(SYMBOL_API_URL, { params: {} });

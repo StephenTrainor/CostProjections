@@ -22,6 +22,7 @@ const get_response = async (url) => {
             }
         });
     } catch (error) {
+        console.log(error);
         return {
             statusCode: error.response.status,
             statusMessage: error.response.statusText,

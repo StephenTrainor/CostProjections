@@ -1,0 +1,30 @@
+a {
+    color: blue;
+    text-align: center;
+    margin: 0.2rem;
+    margin-bottom: 0.4rem;
+}
+
+a:visited {
+    text-decoration: none;
+    color: blue;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: blue;
+}
+
+h3 {
+  text-align: center;
+}
+
+.linkContainer {
+  margin: 0.5em;
+  display: flex;
+  justify-content: center;
+}
+
+.removeBold {
+  font-weight: normal;
+}

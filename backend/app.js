@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cors = require('cors');
 
 var quoteRouter = require('./routes/quote');
+var tableRouter = require('./routes/table');
 var symbolRouter = require('./routes/symbol');
 
 var app = express();
@@ -22,6 +23,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
 app.use('/quote', quoteRouter);
+app.use('/table', tableRouter);
 app.use('/symbol', symbolRouter);
 
 // catch 404 and forward to error handler

@@ -1,9 +1,9 @@
-import styles from '../App.module.css';
+import styles from './Components.module.css';
 
 const Footer = (props) => {
     return (
-        <div className={styles.div}>
-            <a className={styles.link} href={props.href}>{props.msg}</a>
+        <div className={styles.linkContainer}>
+            <a href={props.href}>{props.msg}</a>
         </div>
     );
 };

@@ -2,7 +2,7 @@ import NumberFormat from 'react-number-format';
 import React, { useState, forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TextField, Button, Box, MenuItem } from '@mui/material';
-import styles from '../App.module.css';
+import styles from './Pages.module.css';
 import Footer from '../components/Footer';
 import AutoCompleteField from '../components/AutoCompleteField';
 
@@ -161,7 +161,6 @@ const Home = (props) => {
         ...prev,
         [key]: true,
       }));
-      console.log(key);
       emptyInputField = true;
     }
 
@@ -171,16 +170,16 @@ const Home = (props) => {
   };
 
   return (
-    <div className={`${styles.box} ${styles.mh}`}>
-      <div>
-        <h1 className={styles.header1}>Cost Projections</h1>
+    <div className={styles.centeredContainer}>
+      <div className={`${styles.mainHeaderContainer} ${styles.centeredContainer}`}>
+        <h1 className={styles.mainHeader}>Cost Projections</h1>
       </div>
-      <div className={`${styles.stopOverlap} ${styles.overflow}`}>
+      <div className={`${styles.centeredContainer}`}>
         <Box
           component="form"
           noValidate
           autoComplete="off"
-          className={`${styles.box}`}
+          className={styles.columnFlexBox}
           borderRadius={5}
           backgroundColor="#FFFFFF"
           width={320}
@@ -329,7 +328,7 @@ const Home = (props) => {
               Get Quote
             </Button>
           </div>
-          <footer className={styles.footer}>
+          <footer>
             <Footer />
             <Footer href="https://polygon.io" msg="Tickers Provided by Polygon" />
           </footer>
@@ -376,8 +375,8 @@ export default Home;
 2.1 Backend code for iex [X]
 2.2 Remove inline functions [X]
 2.3 Remove extra divs [X]
-2.4 Add database for most visited stocks
-2.5 Clean up code before code review
+2.4 Add database for most visited stocks [X]
+2.5 Clean up code before code review [X]
 3. design system styling/components (outsource as much as possible to OOB components) ??
 4. alpaca use cases (no coding) ??
- */
+*/
