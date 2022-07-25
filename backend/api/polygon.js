@@ -6,8 +6,7 @@ const getPolygonApiKeys = () => {
 
     if (API_KEY === undefined) {
         console.log("POLYGON_API_KEYS not found, add the api key(s) to the .env file and retry.");
-
-        return [];
+        process.exit(403);
     }
 
     return API_KEY.split(',');

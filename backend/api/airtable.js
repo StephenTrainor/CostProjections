@@ -8,7 +8,7 @@ const retrieveAirtableApiKey = () => {
 
     if (airtableApiKey === undefined) {
         console.log("AIRTABLE_API_KEY hasn't been set. Define the environment variable and try again.");
-        return "";
+        process.exit(403);
     }
 
     return airtableApiKey;
