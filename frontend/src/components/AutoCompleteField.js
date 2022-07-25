@@ -3,47 +3,33 @@ import {
   TextField
 } from '@mui/material';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { fetchTickerSymbols } from '../api/polygonTickerSymbols';
 
 const AutoCompleteField = (props) => {
     const [tickerSymbols, setTickerSymbols] = useState();
     const [fullCompanyNames, setFullCompanyNames] = useState([]);
     const [selectedCompanyName, setSelectedCompanyName] = useState(null);
     const [previousTickerSymbol, setPreviousTickerSymbol] = useState('');
-    const [selectedTickerSymbol, setSelectedTickerSymbol] = useState('');
+    const [enteredSymbol, setEnteredSymbol] = useState('');
 
-    const fetchTickerSymbols = async (symbol) => {
-        const backendTickerSymbolsApiUrl = `http://127.0.0.1:9000/symbol/${symbol}`;
-
-        try {
-            var getTickerSymbolsResponse = await axios.get(backendTickerSymbolsApiUrl);
-        } catch (error) {
-            if (error.response.status !== 429) {
-                getTickerSymbolsResponse = {
-                    data: {
-                        statusCode: error.response.status,
-                        statusMessage: error.response.statusText,
-                        results: [],
-                    }
-                }
-            }
-        }
+    const fetchAutoCompleteSuggestions = async (enteredSymbol) => {
+        const getTickerSymbolsResponse = await fetchTickerSymbols(enteredSymbol);
 
         if (getTickerSymbolsResponse) {
             setTickerSymbols({
-                ...getTickerSymbolsResponse.data
+                ...getTickerSymbolsResponse
             });
         }
     }
 
     useEffect(() => {
-        if (selectedTickerSymbol) {
-            if (!tickerSymbols || selectedTickerSymbol !== previousTickerSymbol) {
-                fetchTickerSymbols(selectedTickerSymbol);
-                setPreviousTickerSymbol(selectedTickerSymbol);
+        if (enteredSymbol) {
+            if (!tickerSymbols || enteredSymbol !== previousTickerSymbol) {
+                fetchAutoCompleteSuggestions(enteredSymbol);
+                setPreviousTickerSymbol(enteredSymbol);
             }
         }
-    }, [setPreviousTickerSymbol, tickerSymbols, previousTickerSymbol, selectedTickerSymbol]);
+    }, [setPreviousTickerSymbol, tickerSymbols, previousTickerSymbol, enteredSymbol]);
 
     useEffect(() => {
         if (!tickerSymbols || (tickerSymbols && tickerSymbols.status !== "OK")) {return};
@@ -68,7 +54,7 @@ const AutoCompleteField = (props) => {
                     let selectedTickerSymbol = newValue.split(' ')[0]; // split on the space to extract ticker symbol out of full name
 
                     setPreviousTickerSymbol(selectedTickerSymbol);
-                    setSelectedTickerSymbol(selectedTickerSymbol);
+                    setEnteredSymbol(selectedTickerSymbol);
                     props.externalSetSymbol(selectedTickerSymbol);
                 }
             }}
@@ -80,7 +66,7 @@ const AutoCompleteField = (props) => {
             <TextField 
                 {...params} 
                 onChange={(event) => {
-                        setSelectedTickerSymbol(event.target.value);
+                        setEnteredSymbol(event.target.value);
                     }
                 } 
                 variant="outlined" 

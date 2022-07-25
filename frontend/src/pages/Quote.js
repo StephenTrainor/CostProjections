@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { Button, Box, } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -8,15 +7,17 @@ import PriceRangeApexChart from '../components/PriceRangeApexChart';
 import FormatDollar from '../components/FormatDollar';
 import styles from './Pages.module.css';
 
+import { fetchAirtableRecords, postAirtableRecord, patchAirtableRecords } from '../api/airtableDatabase';
+import { fetchStockData } from '../api/iexCloudStockData';
+
 const Quote = () => {
     const HOME_PAGE_URL = "/";
-    const BACKEND_BASE_URL = "http://127.0.0.1:9000";
     const [updatedAirtableRecords, setUpdatedAirtableRecords] = useState(false);
     const [currentAirtableRecord, setCurrentAirtableRecord] = useState();
     const [airtableRecords, setAirtableRecords] = useState();
+    const [avgCostChange, setAvgCostChange] = useState(0);
     const [calculation, setCalculation] = useState(0);
-    const [change, setChange] = useState(0);
-    const [data, setData] = useState();
+    const [stockData, setStockData] = useState();
     const navigate = useNavigate();
     var { state } = useLocation();
 
@@ -74,30 +75,18 @@ const Quote = () => {
         navigate(HOME_PAGE_URL);
     }
 
-    const fetchAirtableRecords = async () => {
-        if (!change) {
+    const fetchAndUpdateAirtableRecords = async () => {
+        if (!avgCostChange) {
             return;
         }
 
-        const RETRIEVE_AIRTABLE_URL = `${BACKEND_BASE_URL}/table`;
-
-        try {
-            var response = await axios.get(RETRIEVE_AIRTABLE_URL, {});
-        } catch (error) {
-            response = {
-                data: {
-                    statusCode: error.response.status,
-                    statusMessage: error.response.statusText,
-                    records: [],
-                },
-            };
-        }
+        const fetchedAirtableRecords = await fetchAirtableRecords();
 
         setAirtableRecords([
-            ...response.data.records,
+            ...fetchedAirtableRecords
         ]);
 
-        for (let airtableRecord of response.data.records) {
+        for (let airtableRecord of fetchedAirtableRecords) {
             const {
                 id
             } = airtableRecord;
@@ -114,8 +103,8 @@ const Quote = () => {
                     "fields": {
                         "symbol": symbol,
                         "allTimeVisits": allTimeVisits + 1,
-                        "losingPositions": losingPositions + (change < 0 ? 1 : 0),
-                        "gainingPositions": gainingPositions + (change >= 0 ? 1 : 0),
+                        "losingPositions": losingPositions + (avgCostChange < 0 ? 1 : 0),
+                        "gainingPositions": gainingPositions + (avgCostChange >= 0 ? 1 : 0),
                     }
                 });
                 return;
@@ -126,71 +115,17 @@ const Quote = () => {
             "fields": {
                 "symbol": state.symbol.toUpperCase(),
                 "allTimeVisits": 1,
-                "losingPositions": (change < 0 ? 1 : 0),
-                "gainingPositions": (change >= 0 ? 1 : 0),
+                "losingPositions": (avgCostChange < 0 ? 1 : 0),
+                "gainingPositions": (avgCostChange >= 0 ? 1 : 0),
             }
         });
     }
 
-    const postAirtableRecord = async (newAirtableRecord) => {
-        const {
-            symbol,
-            allTimeVisits,
-            losingPositions,
-            gainingPositions,
-        } = newAirtableRecord.fields;
+    const storeFetchedStockData = async () => {
+        const stockData = await fetchStockData(state.symbol);
 
-        const POST_AIRTABLE_RECORD_URL = `${BACKEND_BASE_URL}/table/${symbol}/${allTimeVisits}/${losingPositions}/${gainingPositions}`;
-
-        try {
-            var response = await axios.post(POST_AIRTABLE_RECORD_URL);
-        } catch (error) {
-            console.log(error);
-        }
-
-        if (!response.data.records) {
-            console.log("Error when issuing POST request to the Airtable records");
-        }
-    }
-
-    const patchAirtableRecords = async (currentAirtableRecord) => {
-        const {id} = currentAirtableRecord;
-        const {
-            symbol,
-            allTimeVisits,
-            losingPositions,
-            gainingPositions,
-        } = currentAirtableRecord.fields;
-
-        const PATCH_AIRTABLE_RECORDS_URL = `${BACKEND_BASE_URL}/table/${id}/${symbol}/${allTimeVisits}/${losingPositions}/${gainingPositions}`;
-    
-        try {
-            var response = await axios.patch(PATCH_AIRTABLE_RECORDS_URL);
-        } catch (error) {
-            console.log(error);
-        }
-
-        if (!response.data.records) {
-            console.log("Error when issuing PATCH request to the Airtable records");
-        }
-    };
-    
-    const fetchStockData = async () => {
-        const STOCK_QUOTE_URL = `${BACKEND_BASE_URL}/quote/${state.symbol}`;
-
-        try {
-            var response = await axios.get(STOCK_QUOTE_URL);
-        } catch (error) {
-            response = {
-                data: {
-                    statusCode: error.response.status,
-                    statusMessage: error.response.statusText,
-                },
-            };
-        }
-
-        setData({
-            ...response.data,
+        setStockData({
+            ...stockData
         });
     };
 
@@ -202,11 +137,11 @@ const Quote = () => {
 
     useEffect(() => {
         if (!airtableRecords) {
-            fetchAirtableRecords();
+            fetchAndUpdateAirtableRecords();
         }
 
-        if (!data && state && state.symbol) {
-            fetchStockData();
+        if (!stockData && state && state.symbol) {
+            storeFetchedStockData();
         }
 
         if (!updatedAirtableRecords && currentAirtableRecord) {
@@ -219,9 +154,9 @@ const Quote = () => {
             setUpdatedAirtableRecords(true);
         }
 
-        if (data) { 
-            if (data.statusCode === 200) {
-                const { latestPrice } = data;
+        if (stockData) { 
+            if (stockData.statusCode === 200) {
+                const { latestPrice } = stockData;
                 const newCash = (state.cash) ? parseInt(state.cash, 10) : parseInt(state.newShares, 10) * latestPrice;
                 const shares = parseInt(state.shares, 10);
                 const avgCost = parseInt(state.avgCost, 10);
@@ -234,7 +169,7 @@ const Quote = () => {
 
                     const newAverageCost = (currentTotalValue + newCash) / totalShares;
 
-                    setChange(newAverageCost - avgCost);
+                    setAvgCostChange(newAverageCost - avgCost);
                     setCalculation(newAverageCost);
                 }
                 else if (state.option === "CNP") {
@@ -244,7 +179,7 @@ const Quote = () => {
 
                         const sharesNeeded = (denominator === 0) ? 0 : numerator / denominator;
 
-                        setChange(latestPrice - avgCost);
+                        setAvgCostChange(latestPrice - avgCost);
                         setCalculation(sharesNeeded);
                     }
                     else {
@@ -252,11 +187,11 @@ const Quote = () => {
                     }
                 }
             }
-            else if (data.statusCode === 404) {
+            else if (stockData.statusCode === 404) {
                 redirectInvalidTickerSymbol();
             }
         }
-    }, [data, redirectInvalidTickerSymbol, redirectInvalidTargetAvgCost, fetchStockData, fetchAirtableRecords]);
+    }, [stockData, redirectInvalidTickerSymbol, redirectInvalidTargetAvgCost, storeFetchedStockData, fetchAndUpdateAirtableRecords]);
 
     return (
         <>
@@ -265,10 +200,10 @@ const Quote = () => {
             className={styles.centeredContainer}
         >
             <h1>
-                Results for {(data) ? data.companyName : ""} ({state.symbol.toUpperCase()})
+                Results for {(stockData) ? stockData.companyName : ""} ({state.symbol.toUpperCase()})
             </h1>
             <div className={styles.centeredContainer}>
-                <PriceRangeApexChart state={state} calculation={calculation} latestPrice={(data && data.latestPrice) ? data.latestPrice : 0} />
+                <PriceRangeApexChart state={state} calculation={calculation} latestPrice={(stockData && stockData.latestPrice) ? stockData.latestPrice : 0} />
             </div>
             <div>
                 <h3>
@@ -281,7 +216,7 @@ const Quote = () => {
                     /> 
                 :
                     <FormatDollar 
-                        number={(data) ? calculation * data.latestPrice : calculation}
+                        number={(stockData) ? calculation * stockData.latestPrice : calculation}
                         postText={` / ${round(calculation, 4)} shares`}
                     />
                 }
@@ -293,13 +228,13 @@ const Quote = () => {
                                     number={(state.cash) ? state.cash : state.newShares}
                                     prefix={(state.cash) ? "$" : ""}
                                     preText={`Purchasing `}
-                                    postText={`${(state.newShares) ? " share(s)" : ""} of ${state.symbol.toUpperCase()} will ${(change < 0) ? "decrease" : "increase"} your average cost by $${round(((change < 0) ? change * -1 : change), 2)}/share at the current price of $${(data) ? round(data.latestPrice, 2) : 0}`}
+                                    postText={`${(state.newShares) ? " share(s)" : ""} of ${state.symbol.toUpperCase()} will ${(avgCostChange < 0) ? "decrease" : "increase"} your average cost by $${round(((avgCostChange < 0) ? avgCostChange * -1 : avgCostChange), 2)}/share at the current price of $${(stockData) ? round(stockData.latestPrice, 2) : 0}`}
                                 />
                             : 
                                 <FormatDollar 
-                                    number={(data) ? calculation * data.latestPrice : calculation}
+                                    number={(stockData) ? calculation * stockData.latestPrice : calculation}
                                     preText={`Changing your average cost to $${round(parseInt(state.targetAvgCost, 10), 2)} requires `}
-                                    postText={` or ${round(calculation, 4)} shares at the current price of $${(data) ? round(data.latestPrice, 2) : 0}`}
+                                    postText={` or ${round(calculation, 4)} shares at the current price of $${(stockData) ? round(stockData.latestPrice, 2) : 0}`}
                                 />
                         }
                     </div>
