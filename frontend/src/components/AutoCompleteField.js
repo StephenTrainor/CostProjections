@@ -5,12 +5,19 @@ import {
 import { useState, useEffect } from 'react';
 import { fetchTickerSymbols } from '../api/polygonTickerSymbols';
 
+const requiredFieldErrorText = "Required Field";
+
 const AutoCompleteField = (props) => {
     const [tickerSymbols, setTickerSymbols] = useState();
     const [fullCompanyNames, setFullCompanyNames] = useState([]);
     const [selectedCompanyName, setSelectedCompanyName] = useState(null);
     const [previousTickerSymbol, setPreviousTickerSymbol] = useState('');
     const [enteredSymbol, setEnteredSymbol] = useState('');
+
+    const disableSymbolInputError = () => {
+        props.errors.symbol = false;
+        props.errors.symbolErrorText = '';
+    };
 
     const fetchAutoCompleteSuggestions = async (enteredSymbol) => {
         const getTickerSymbolsResponse = await fetchTickerSymbols(enteredSymbol);
@@ -48,14 +55,17 @@ const AutoCompleteField = (props) => {
             id="symbol"
             value={selectedCompanyName || props.defaultTickerSymbol}
             onChange={(event, newValue) => {
+                disableSymbolInputError();
                 setSelectedCompanyName(newValue);
                 
                 if (newValue) {
                     let selectedTickerSymbol = newValue.split(' ')[0]; // split on the space to extract ticker symbol out of full name
 
                     setPreviousTickerSymbol(selectedTickerSymbol);
-                    setEnteredSymbol(selectedTickerSymbol);
                     props.externalSetSymbol(selectedTickerSymbol);
+                }
+                else {
+                    props.externalSetSymbol("");
                 }
             }}
             error={props.errors.symbol}
@@ -66,14 +76,17 @@ const AutoCompleteField = (props) => {
             <TextField 
                 {...params} 
                 onChange={(event) => {
+                        disableSymbolInputError();
+
                         setEnteredSymbol(event.target.value);
+                        props.externalSetSymbol(event.target.value);
                     }
                 } 
                 variant="outlined" 
                 label="Symbol or Company Name" 
                 required={props.requiredInputField}
                 error={props.errors.symbol}
-                helperText={props.errors.symbolErrorText}
+                helperText={props.errors.symbolErrorText || (props.errors.symbol) ? requiredFieldErrorText : ''}
             />}
         />
     );

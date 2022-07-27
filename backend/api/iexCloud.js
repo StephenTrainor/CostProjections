@@ -1,26 +1,18 @@
 require('dotenv').config();
 var axios = require('axios');
 
-const iexCloudBaseUrl = "https://cloud.iexapis.com/v1";
-
-const retrieveIexCloudApiKey = () => {
-    const iexCloudApiKey = process.env.IEXCLOUD_API_KEY;
-
-    if (iexCloudApiKey === undefined) {
-        console.log("IEXCLOUD_API_KEY hasn't been set. Define the environment variable and try again.");
-        process.exit(403);
-    }
-
-    return iexCloudApiKey;
-};
+const {
+    IEXCLOUD_BASE_URL,
+    IEXCLOUD_API_KEY
+} = process.env;
 
 const fetchStockQuote = async (tickerSymbol) => {
-    const stockQuoteUrl = `${iexCloudBaseUrl}/stock/${tickerSymbol}/quote`;
+    const stockQuoteUrl = `${IEXCLOUD_BASE_URL}/stock/${tickerSymbol}/quote`;
 
     try {
         const getStockQuoteResponse = await axios.get(stockQuoteUrl, {
             params: {
-                token: retrieveIexCloudApiKey()
+                token: IEXCLOUD_API_KEY
             }
         });
 

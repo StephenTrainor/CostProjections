@@ -12,14 +12,15 @@ const getPolygonApiKeys = () => {
     return API_KEY.split(',');
 }
 
+const { POLYGON_BASE_URL } = process.env;
 var currentPolygonApiKeyIndex = 0;
 var polygonApiKeys = getPolygonApiKeys();
 
 const fetchTickerSymbols = async (symbol) => {
-    const API_URL = `https://api.polygon.io/v3/reference/tickers?market=stocks&search=${symbol}&active=true&sort=ticker&order=asc&limit=100`;
+    const tickerSymbolQuoteUrl = `${POLYGON_BASE_URL}&search=${symbol}`;
 
     try {
-        const fetchTickerSymbolsResponse = await axios.get(API_URL, {
+        const fetchTickerSymbolsResponse = await axios.get(tickerSymbolQuoteUrl, {
             params: {
                 apiKey: polygonApiKeys[currentPolygonApiKeyIndex]
             }
