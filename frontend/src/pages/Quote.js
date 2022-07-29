@@ -12,7 +12,7 @@ import { fetchAirtableRecords, postAirtableRecord, patchAirtableRecords } from '
 import { fetchStockData } from '../api/iexCloudStockData';
 
 const Quote = () => {
-    const HOME_PAGE_URL = "/";
+    const HOME_PAGE_URL = process.env.HOME_PAGE_URL ?? "/";
     const [updatedAirtableRecords, setUpdatedAirtableRecords] = useState(false);
     const [currentAirtableRecord, setCurrentAirtableRecord] = useState();
     const [airtableRecords, setAirtableRecords] = useState();
