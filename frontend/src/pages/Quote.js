@@ -192,7 +192,7 @@ const Quote = () => {
                 redirectInvalidTickerSymbol();
             }
         }
-    }, [stockData, redirectInvalidTickerSymbol, redirectInvalidTargetAvgCost, storeFetchedStockData, fetchAndUpdateAirtableRecords]);
+    }, [stockData, redirectInvalidTickerSymbol, redirectInvalidTargetAvgCost, storeFetchedStockData, fetchAndUpdateAirtableRecords, airtableRecords, currentAirtableRecord, state, updatedAirtableRecords]);
 
     return (
         <>
