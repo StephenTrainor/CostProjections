@@ -1,9 +1,12 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Quote from './pages/Quote';
 import styles from './App.module.css';
 
 const App = () => {
+  const navigate = useNavigate();
+  const HOME_PAGE_URL = procss.env.REACT_APP_HOME_PAGE_URL ?? "/";
+
   return (
     <BrowserRouter>
       <div className={styles.gradientBackground}>
@@ -12,6 +15,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/quote" element={<Quote />} />
+            <Route path="*" element={navigate(HOME_PAGE_URL)} />
           </Routes>
           </div>
         </div>
