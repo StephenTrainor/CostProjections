@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL ?? "http://127.0.0.1:9000";
+const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL ?? "http://127.0.0.1:9000";
 
 const fetchAirtableRecords = async () => {
     const RETRIEVE_AIRTABLE_URL = `${BACKEND_BASE_URL}/table`;
