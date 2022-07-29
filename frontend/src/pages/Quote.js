@@ -1,6 +1,7 @@
 import { Button, Box, } from '@mui/material';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+
 import GainLossStackedApexChart from '../components/GainLossStackedApexChart';
 import AllTimeVisitsApexChart from '../components/AllTimeVisitsApexChart';
 import PriceRangeApexChart from '../components/PriceRangeApexChart';

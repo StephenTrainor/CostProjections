@@ -1,10 +1,11 @@
-import NumberFormat from 'react-number-format';
-import React, { useState, forwardRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { TextField, Button, Box, MenuItem } from '@mui/material';
-import styles from './Pages.module.css';
-import Footer from '../components/Footer';
+
+import CustomFormatTextField from '../components/CustomFormatTextField';
 import AutoCompleteField from '../components/AutoCompleteField';
+import Footer from '../components/Footer';
+import styles from './Pages.module.css';
 
 const requiredFieldErrorText = "Required Field";
 const calculationOptions = [
@@ -28,49 +29,6 @@ const newEquityOptions = [
     label: 'New Shares',
   },
 ];
-
-const NumberFormatCustomDollar = forwardRef(function NumberFormatCustomDollar(props, ref) {
-  const { onChange, ...other } = props;
-
-  return (
-    <NumberFormat
-      {...other}
-      getInputRef={ref}
-      onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value,
-          },
-        });
-      }}
-      thousandSeparator
-      isNumericString
-      prefix="$"
-    />
-  );
-});
-
-const NumberFormatCustom = forwardRef(function NumberFormatCustom(props, ref) {
-  const { onChange, ...other } = props;
-
-  return (
-    <NumberFormat
-      {...other}
-      getInputRef={ref}
-      onValueChange={(values) => {
-        onChange({
-          target: {
-            name: props.name,
-            value: values.value,
-          },
-        });
-      }}
-      thousandSeparator
-      isNumericString
-    />
-  );
-});
 
 const Home = (props) => {
   const navigate = useNavigate();
@@ -124,9 +82,11 @@ const Home = (props) => {
   }
 
   const updateInputValues = (event) => {
+    const newInputValue = event.target.value.replace("$", "");
+    
     setUserInputValues({
       ...userInputValues,
-      [event.target.name]: event.target.value,
+      [event.target.name]: newInputValue,
     });
 
     if (!event.target.value) {
@@ -165,6 +125,7 @@ const Home = (props) => {
     }
 
     if (!emptyInputField) {
+      console.log(userInputValues);
       navigate("/quote", { state: userInputValues });
     }
   };
@@ -211,37 +172,26 @@ const Home = (props) => {
               />
           </div>
           <div className={styles.userInputContainer}>
-            <TextField 
-              onChange={(event) => {validatePositiveInputValue(event)}}
-              className={styles.userInput}
-              varaint="outlined"
+            <CustomFormatTextField 
+              onChange={validatePositiveInputValue}
               value={userInputValues.shares}
               label="Shares Owned"
               name="shares"
               id="shares"
               error={errors.shares}
               helperText={errors.sharesErrorText || ((errors.shares) ? requiredFieldErrorText : '')}
-              InputProps={{
-                inputComponent: NumberFormatCustom,
-              }}
-              required
             />
           </div>
           <div className={styles.userInputContainer}>
-            <TextField 
-              onChange={(event) => {validatePositiveInputValue(event)}}
-              className={styles.userInput}
-              variant="outlined"
+            <CustomFormatTextField
+              onChangeFunction={validatePositiveInputValue}
               value={userInputValues.avgCost}
               label="Average Cost Per Share"
               name="avgCost"
               id="avgCost"
               error={errors.avgCost}
               helperText={errors.avgCostErrorText || ((errors.avgCost) ? requiredFieldErrorText : '')}
-              InputProps={{
-                inputComponent: NumberFormatCustomDollar,
-              }}
-              required
+              prefix="$"
             />
           </div>
           { userInputValues.option === "DCAP" ? (
@@ -264,58 +214,42 @@ const Home = (props) => {
             </div>
             { userInputValues.newEquityOption === "CA" ? (
               <div className={styles.userInputContainer}>
-                <TextField
-                  onChange={(event) => {validatePositiveInputValue(event)}}
-                  className={styles.userInput}
-                  variant="outlined"
+                <CustomFormatTextField 
+                  onChangeFunction={validatePositiveInputValue}
                   value={userInputValues.cash}
                   label="Cash Available"
                   name="cash"
                   id="cash"
-                  error={errors.cash}
+                  erorr={errors.cash}
                   helperText={errors.cashErrorText || ((errors.cash) ? requiredFieldErrorText : '')}
-                  InputProps={{
-                    inputComponent: NumberFormatCustomDollar,
-                  }}
-                  required
+                  prefix="$"
                 />
               </div>
             ) : (
               <div className={styles.userInputContainer}>
-                <TextField 
-                  onChange={(event) => {validatePositiveInputValue(event)}}
-                  className={styles.userInput}
-                  variant="outlined"
+                <CustomFormatTextField 
+                  onChangeFunction={validatePositiveInputValue}
                   value={userInputValues.newShares}
                   label="New Shares"
                   name="newShares"
                   id="newShares"
                   error={errors.newShares}
                   helperText={errors.newSharesErrorText || ((errors.newShares) ? requiredFieldErrorText : '')}
-                  InputProps={{
-                    inputComponent: NumberFormatCustom,
-                  }}
-                  required
                 />
               </div>
             )}
             </>
           ) : (
             <div className={styles.userInputContainer}>
-              <TextField 
-                onChange={(event) => {validatePositiveInputValue(event)}}
-                className={styles.userInput}
-                variant="outlined"
+              <CustomFormatTextField 
+                onChange={validatePositiveInputValue}
                 value={userInputValues.targetAvgCost}
                 label="Target Average Cost"
                 name="targetAvgCost"
                 id="targetAvgCost"
                 error={errors.targetAvgCost}
                 helperText={(state && state.targetErrorText) ? errors.targetAvgCostErrorText : ((errors.targetAvgCost) ? requiredFieldErrorText : '')}
-                InputProps={{
-                  inputComponent: NumberFormatCustomDollar,
-                }}
-                required
+                prefix="$"
               />
             </div>
           )}
@@ -350,8 +284,6 @@ Home.defaultProps = {
     newShares: '',
   },
   errors: {
-    newEquityOption: false,
-    newEquityOptionErrorText: '',
     symbol: false,
     symbolErrorText: '',
     shares: false,

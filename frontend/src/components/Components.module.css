@@ -29,3 +29,8 @@ h3 {
 .removeBold {
   font-weight: normal;
 }
+
+.userInput {
+  text-align: left;
+  width: 280px;
+}
