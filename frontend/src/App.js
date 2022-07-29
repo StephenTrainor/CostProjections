@@ -1,22 +1,17 @@
-require('dotenv').config();
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Quote from './pages/Quote';
 import styles from './App.module.css';
 
 const App = () => {
-  const navigate = useNavigate();
-  const HOME_PAGE_URL = process.env.HOME_PAGE_URL ?? "/";
-
   return (
-    <BrowserRouter basename={process.env.PUBLIC_URL}>
+    <BrowserRouter>
       <div className={styles.gradientBackground}>
         <div className={styles.reactContent}>
           <div className={styles.overflowToScroll}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/quote" element={<Quote />} />
-            <Route path="*" element={navigate(HOME_PAGE_URL)} />
           </Routes>
           </div>
         </div>

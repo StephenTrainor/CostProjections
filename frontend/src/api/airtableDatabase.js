@@ -1,4 +1,3 @@
-require('dotenv').config();
 import axios from 'axios';
 
 const BACKEND_BASE_URL = process.env.BACKEND_BASE_URL ?? "http://127.0.0.1:9000";
