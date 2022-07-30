@@ -15,8 +15,11 @@ const AutoCompleteField = (props) => {
     const [enteredSymbol, setEnteredSymbol] = useState('');
 
     const disableSymbolInputError = () => {
-        props.errors.symbol = false;
-        props.errors.symbolErrorText = '';
+        props.updateErrors({
+            ...props.errors,
+            symbol: false,
+            symbolErrorText: ''
+        });
     };
 
     const fetchAutoCompleteSuggestions = async (enteredSymbol) => {
@@ -68,8 +71,6 @@ const AutoCompleteField = (props) => {
                     props.externalSetSymbol("");
                 }
             }}
-            error={props.errors.symbol}
-            helperText={props.errors.symbolErrorText}
             options={(tickerSymbols && tickerSymbols.status === "OK") ? fullCompanyNames : []}
             className={props.className}
             renderInput={(params) => 
@@ -86,7 +87,7 @@ const AutoCompleteField = (props) => {
                 label="Symbol or Company Name" 
                 required={props.requiredInputField}
                 error={props.errors.symbol}
-                helperText={props.errors.symbolErrorText || (props.errors.symbol) ? requiredFieldErrorText : ''}
+                helperText={props.errors.symbolErrorText || ((props.errors.symbol) ? requiredFieldErrorText : '')}
             />}
         />
     );

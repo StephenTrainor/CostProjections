@@ -21,6 +21,8 @@ const Quote = () => {
     const [stockData, setStockData] = useState();
     const navigate = useNavigate();
     var { state } = useLocation();
+    
+    const { userInput } = state;
 
     const round = (val, precision) => {
         let places = Math.pow(10, precision);
@@ -40,10 +42,14 @@ const Quote = () => {
 
     const redirectInvalidTargetAvgCost = () => {
         state = {
-            ...state,
+            userInput: {
+                ...state.userInput
+            },
+            errors: {
+                targetAvgCost: true,
+                targetAvgCostErrorText: 'Target Average Cost must be between the latest price and Current Average Cost.',
+            },
             edit: true,
-            target: true,
-            targetErrorText: 'Invalid Target Average Cost',
         };
 
         navigate(HOME_PAGE_URL, { state });
@@ -51,9 +57,14 @@ const Quote = () => {
 
     const redirectInvalidTickerSymbol = () => {
         state = {
-            ...state,
-            symbol: true,
-            symbolErrorText: 'Invalid Symbol',
+            userInput: {
+                ...state.userInput
+            },
+            errors: {
+                symbol: true,
+                symbolErrorText: 'Symbol not found. Please select an option from the dropdown as you type.',
+            },
+            edit: true,
         };
 
         navigate(HOME_PAGE_URL, { state });
@@ -63,7 +74,9 @@ const Quote = () => {
         event.preventDefault();
 
         state = {
-            ...state,
+            userInput: {
+                ...state.userInput
+            },
             edit: true,
         };
 
@@ -98,7 +111,7 @@ const Quote = () => {
                 gainingPositions,
             } = airtableRecord.fields;
 
-            if (symbol === state.symbol) {
+            if (symbol === userInput.symbol) {
                 setCurrentAirtableRecord({
                     "id": id,
                     "fields": {
@@ -114,7 +127,7 @@ const Quote = () => {
 
         setCurrentAirtableRecord({
             "fields": {
-                "symbol": state.symbol.toUpperCase(),
+                "symbol": userInput.symbol.toUpperCase(),
                 "allTimeVisits": 1,
                 "losingPositions": (avgCostChange < 0 ? 1 : 0),
                 "gainingPositions": (avgCostChange >= 0 ? 1 : 0),
@@ -123,7 +136,7 @@ const Quote = () => {
     }
 
     const storeFetchedStockData = async () => {
-        const stockData = await fetchStockData(state.symbol);
+        const stockData = await fetchStockData(userInput.symbol);
 
         setStockData({
             ...stockData
@@ -141,7 +154,7 @@ const Quote = () => {
             fetchAndUpdateAirtableRecords();
         }
 
-        if (!stockData && state && state.symbol) {
+        if (!stockData && userInput && userInput.symbol) {
             storeFetchedStockData();
         }
 
@@ -158,12 +171,12 @@ const Quote = () => {
         if (stockData) { 
             if (stockData.statusCode === 200) {
                 const { latestPrice } = stockData;
-                const newCash = (state.cash) ? parseInt(state.cash, 10) : parseInt(state.newShares, 10) * latestPrice;
-                const shares = parseInt(state.shares, 10);
-                const avgCost = parseInt(state.avgCost, 10);
-                const targetAvgCost = parseInt(state.targetAvgCost, 10);
+                const newCash = (userInput.newEquityOption === "CA") ? parseInt(userInput.cash, 10) : parseInt(userInput.newShares, 10) * latestPrice;
+                const shares = parseInt(userInput.shares, 10);
+                const avgCost = parseInt(userInput.avgCost, 10);
+                const targetAvgCost = parseInt(userInput.targetAvgCost, 10);
 
-                if (state.option === "DCAP") {
+                if (userInput.option === "DCAP") {
                     const currentTotalValue = shares * avgCost;
                     const purchasableShares = newCash / latestPrice;
                     const totalShares = shares + purchasableShares;
@@ -173,7 +186,7 @@ const Quote = () => {
                     setAvgCostChange(newAverageCost - avgCost);
                     setCalculation(newAverageCost);
                 }
-                else if (state.option === "CNP") {
+                else if (userInput.option === "CNP") {
                     if (isAverageCostAchievable(avgCost, targetAvgCost, latestPrice)) {
                         const numerator = shares * (avgCost - targetAvgCost);
                         const denominator = targetAvgCost - latestPrice;
@@ -196,21 +209,21 @@ const Quote = () => {
 
     return (
         <>
-        {(state && state !== null) ? (
+        {(userInput && userInput !== null) ? (
         <Box
             className={styles.centeredContainer}
         >
             <h1>
-                Results for {(stockData) ? stockData.companyName : ""} ({state.symbol.toUpperCase()})
+                Results for {(stockData) ? stockData.companyName : ""} ({userInput.symbol.toUpperCase()})
             </h1>
             <div className={styles.centeredContainer}>
-                <PriceRangeApexChart state={state} calculation={calculation} latestPrice={(stockData && stockData.latestPrice) ? stockData.latestPrice : 0} />
+                <PriceRangeApexChart state={userInput} calculation={calculation} latestPrice={(stockData && stockData.latestPrice) ? stockData.latestPrice : 0} />
             </div>
             <div>
                 <h3>
-                    {(state.option === "DCAP") ? "New Average:" : "Cash Needed:"}
+                    {(userInput.option === "DCAP") ? "New Average:" : "Cash Needed:"}
                 </h3>
-                {(state.option === "DCAP") ? 
+                {(userInput.option === "DCAP") ? 
                     <FormatDollar 
                         number={calculation}
                         postText={`/share`}
@@ -224,17 +237,17 @@ const Quote = () => {
                 <div className={styles.centeredContainer}>
                     <div className={styles.textDescription}>
                         {
-                            (state.option === "DCAP") ? 
+                            (userInput.option === "DCAP") ? 
                                 <FormatDollar 
-                                    number={(state.cash) ? state.cash : state.newShares}
-                                    prefix={(state.cash) ? "$" : ""}
+                                    number={(userInput.newEquityOption === "CA") ? userInput.cash : userInput.newShares}
+                                    prefix={(userInput.newEquityOption === "CA") ? "$" : ""}
                                     preText={`Purchasing `}
-                                    postText={`${(state.newShares) ? " share(s)" : ""} of ${state.symbol.toUpperCase()} will ${(avgCostChange < 0) ? "decrease" : "increase"} your average cost by $${round(((avgCostChange < 0) ? avgCostChange * -1 : avgCostChange), 2)}/share at the current price of $${(stockData) ? round(stockData.latestPrice, 2) : 0}`}
+                                    postText={`${(userInput.newEquityOption === "NS") ? " share(s)" : ""} of ${userInput.symbol.toUpperCase()} will ${(avgCostChange < 0) ? "decrease" : "increase"} your average cost by $${round(((avgCostChange < 0) ? avgCostChange * -1 : avgCostChange), 2)}/share at the current price of $${(stockData) ? round(stockData.latestPrice, 2) : 0}`}
                                 />
                             : 
                                 <FormatDollar 
                                     number={(stockData) ? calculation * stockData.latestPrice : calculation}
-                                    preText={`Changing your average cost to $${round(parseInt(state.targetAvgCost, 10), 2)} requires `}
+                                    preText={`Changing your average cost to $${round(parseInt(userInput.targetAvgCost, 10), 2)} requires `}
                                     postText={` or ${round(calculation, 4)} shares at the current price of $${(stockData) ? round(stockData.latestPrice, 2) : 0}`}
                                 />
                         }

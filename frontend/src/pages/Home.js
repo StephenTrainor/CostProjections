@@ -15,7 +15,7 @@ const calculationOptions = [
   },
   {
     value: 'CNP',
-    label: 'Cash Needed Project',
+    label: 'Cash Needed Projection',
   },
 ];
 
@@ -34,28 +34,13 @@ const Home = (props) => {
   const navigate = useNavigate();
   const { state } = useLocation();
   
-  const inputValues = (state && state.edit) ? state : { ...props.userInput };
-
-  var errorValues = {
+  const inputValues = (state && state.edit) ? state.userInput : { ...props.userInput };
+  const errorValues = (state) ? {
     ...props.errors,
+    ...state.errors
+  } : {
+    ...props.errors
   };
-
-  if (state) { 
-    if (state.targetAvgCost && state.targetErrorText) {
-      errorValues = {
-        ...errorValues,
-        targetAvgCost: state.targetAvgCost,
-        targetAvgCostErrorText: state.targetErrorText,
-      };
-    }
-    if (state.symbol && state.symbolErrorText) {
-      errorValues = {
-        ...errorValues,
-        symbol: state.symbol,
-        symbolErrorText: state.symbolErrorText,
-      };
-    }
-  }
 
   const [userInputValues, setUserInputValues] = useState(inputValues);
   const [errors, setErrors] = useState(errorValues);
@@ -125,8 +110,9 @@ const Home = (props) => {
     }
 
     if (!emptyInputField) {
-      console.log(userInputValues);
-      navigate("/quote", { state: userInputValues });
+      navigate("/quote", { state: {
+        userInput: userInputValues
+      } });
     }
   };
 
@@ -300,15 +286,3 @@ Home.defaultProps = {
 };
 
 export default Home;
-
-/*
-1. Typeahead for searching, [X]
-2. revisit UX [X]
-2.1 Backend code for iex [X]
-2.2 Remove inline functions [X]
-2.3 Remove extra divs [X]
-2.4 Add database for most visited stocks [X]
-2.5 Clean up code before code review [X]
-3. design system styling/components (outsource as much as possible to OOB components) ??
-4. alpaca use cases (no coding) ??
-*/
