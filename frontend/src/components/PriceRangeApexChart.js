@@ -16,6 +16,8 @@ const PriceRangeApexChart = (props) => {
     const latestPriceColor = '#a0a0a0';
     const rangeColor = '#f0ffff';
 
+    const lightColor = "#ffffff";
+
     const state = {
         series: [{
             name: 'Price Range',
@@ -50,6 +52,18 @@ const PriceRangeApexChart = (props) => {
             xaxis: {
                 min: ((avgCost <= latestPrice) ? avgCost : latestPrice) - (Math.abs(latestPrice - avgCost) * 0.1),
                 max: ((avgCost >= latestPrice) ? avgCost : latestPrice) + (Math.abs(latestPrice - avgCost) * 0.1),
+                labels: {
+                    style: {
+                        colors: lightColor
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: lightColor
+                    }
+                }
             },
             chart: {
                 height: minChartHeight + deviceHeight / 13.34,
@@ -68,6 +82,9 @@ const PriceRangeApexChart = (props) => {
                 customLegendItems: ['Price Range', 'Previous Average Cost', 'Latest Price', 'New Average Cost'],
                 markers: {
                         fillColors: [rangeColor, previousAvgColor, latestPriceColor, newAvgColor]
+                },
+                labels: {
+                    colors: lightColor
                 }
             },
             tooltip: {

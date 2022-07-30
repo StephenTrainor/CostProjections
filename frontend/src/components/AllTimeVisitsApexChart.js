@@ -8,6 +8,8 @@ const AllTimeVisitsApexChart = (props) => {
     const minChartWidth = 180;
     const minChartHeight = 200;
 
+    const lightColor = '#ffffff';
+
     const state = {
         series: [{
             name: 'Losing Positions',
@@ -37,21 +39,40 @@ const AllTimeVisitsApexChart = (props) => {
                 }
             },
             xaxis: {
-                categories: []
+                categories: [],
+                labels: {
+                    style: {
+                        colors: lightColor
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: lightColor
+                    }
+                }
             },
             title: {
                 text: 'Most Visited Stocks',
-                align: 'center'
+                align: 'center',
+                style: {
+                    fontSize: '18px',
+                    color: lightColor
+                }
             },
             legend: {
                 positions: 'bottom',
                 align: 'center',
+                labels: {
+                    colors: lightColor
+                }
             },
             fill: {
                 opacity: 0.9
             },
             tooltip: {
-                theme: 'dark'
+                theme: 'dark',
             }
         }
     };

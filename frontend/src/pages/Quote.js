@@ -1,4 +1,5 @@
-import { Button, Box, } from '@mui/material';
+import { Button, Box } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -10,6 +11,14 @@ import styles from './Pages.module.css';
 
 import { fetchAirtableRecords, postAirtableRecord, patchAirtableRecords } from '../api/airtableDatabase';
 import { fetchStockData } from '../api/iexCloudStockData';
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#ffffff'
+        }
+    }
+});
 
 const Quote = () => {
     const HOME_PAGE_URL = "/";
@@ -254,26 +263,28 @@ const Quote = () => {
                     </div>
                 </div>
             </div>
-            <div className={styles.rowFlexBox}>
+            <ThemeProvider theme={theme}>
                 <div className={styles.rowFlexBox}>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        onClick={(event) => {redirectEditFormRequest(event)}}
-                    >
-                        Edit Request
-                    </Button>
+                    <div className={styles.rowFlexBox}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            onClick={(event) => {redirectEditFormRequest(event)}}
+                        >
+                            Edit Request
+                        </Button>
+                    </div>
+                    <div className={styles.rowFlexBox}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            onClick={(event) => {redirectToHome(event)}}
+                        >
+                            New Request
+                        </Button>
+                    </div>
                 </div>
-                <div className={styles.rowFlexBox}>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        onClick={(event) => {redirectToHome(event)}}
-                    >
-                        New Request
-                    </Button>
-                </div>
-            </div>
+            </ThemeProvider>
             <h1>
                 Analytics
             </h1>

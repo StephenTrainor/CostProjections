@@ -8,6 +8,8 @@ const GainLossStackedApexChart = (props) => {
     const minDeviceWidth = 180;
     const minDeviceHeight = 120;
 
+    const lightColor = '#ffffff'
+
     const state = {
         series: [{
             name: 'Winning Positions',
@@ -20,7 +22,7 @@ const GainLossStackedApexChart = (props) => {
         options: {
             colors: ['#16c25d', '#e12f2f'],
             chart: {
-                height: minDeviceHeight + deviceHeight / 15,
+                height: minDeviceHeight + deviceHeight / 14,
                 width: minDeviceWidth + deviceWidth / 3,
                 type: 'bar',
                 stacked: true,
@@ -37,10 +39,26 @@ const GainLossStackedApexChart = (props) => {
             },
             title: {
                 text: `${symbol.toUpperCase()} Win-Loss Percentages`,
-                align: 'center'
+                align: 'center',
+                style: {
+                    fontSize: '18px',
+                    color: lightColor
+                }
             },
             xaxis: {
-                categories: [symbol.toUpperCase()]
+                categories: [symbol.toUpperCase()],
+                labels: {
+                    style: {
+                        colors: lightColor
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: lightColor
+                    }
+                }
             },
             tooltip: {
                 theme: 'dark',
@@ -56,6 +74,9 @@ const GainLossStackedApexChart = (props) => {
             legend: {
                 position: 'bottom',
                 horizontalAlign: 'center',
+                labels: {
+                    colors: lightColor
+                }
             }
         }
     }
