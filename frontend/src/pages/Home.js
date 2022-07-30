@@ -82,7 +82,7 @@ const Home = (props) => {
   }
 
   const updateInputValues = (event) => {
-    const newInputValue = event.target.value.replace("$", "");
+    const newInputValue = event.target.value.replaceAll("$", "").replaceAll(",", "").replaceAll(".", "");
     
     setUserInputValues({
       ...userInputValues,
