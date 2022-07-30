@@ -23,7 +23,7 @@ const AllTimeVisitsApexChart = (props) => {
             colors: ['#e12f2f', '#16c25d'],
             chart: {
                 type: 'bar',
-                height: minChartHeight + deviceHeight / 10,
+                height: minChartHeight + deviceHeight / 8,
                 width: minChartWidth + deviceWidth / 3,
                 stacked: true,
                 toolbar: {
