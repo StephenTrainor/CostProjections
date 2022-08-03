@@ -1,6 +1,8 @@
 import axios from 'axios';
+import { apiConstants, errorConstants } from '../AppConstants';
 
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL ?? "http://127.0.0.1:9000";
+const { BACKEND_BASE_URL } = apiConstants;
+const { invalidAirtablePostRequestErrorText, invalidAirtablePatchRequestErrorText } = errorConstants.errorMessages;
 
 const fetchAirtableRecords = async () => {
     const RETRIEVE_AIRTABLE_URL = `${BACKEND_BASE_URL}/table`;
@@ -32,7 +34,7 @@ const postAirtableRecord = async (newAirtableRecord) => {
         const postRecordResponse = await axios.post(POST_AIRTABLE_RECORD_URL);
 
         if (!postRecordResponse.data.records) {
-            console.log("Error when issuing POST request to the Airtable records");
+            console.log(invalidAirtablePostRequestErrorText);
         }
     } catch (error) {
         console.log(error);
@@ -54,7 +56,7 @@ const patchAirtableRecords = async (currentAirtableRecord) => {
         const patchRecordsResponse = await axios.patch(PATCH_AIRTABLE_RECORDS_URL);
 
         if (!patchRecordsResponse.data.records) {
-            console.log("Error when issuing PATCH request to the Airtable records");
+            console.log(invalidAirtablePatchRequestErrorText);
         }
     } catch (error) {
         console.log(error);

@@ -12,26 +12,31 @@ import styles from './Pages.module.css';
 import { fetchAirtableRecords, postAirtableRecord, patchAirtableRecords } from '../api/airtableDatabase';
 import { fetchStockData } from '../api/iexCloudStockData';
 
+import { pagesConstants, errorConstants } from '../AppConstants';
+
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#ffffff'
+            main: pagesConstants.primaryMainLightColor
         }
     }
 });
 
 const Quote = () => {
-    const HOME_PAGE_URL = "/";
     const [updatedAirtableRecords, setUpdatedAirtableRecords] = useState(false);
     const [currentAirtableRecord, setCurrentAirtableRecord] = useState();
     const [airtableRecords, setAirtableRecords] = useState();
     const [avgCostChange, setAvgCostChange] = useState(0);
     const [calculation, setCalculation] = useState(0);
     const [stockData, setStockData] = useState();
+
     const navigate = useNavigate();
     var { state } = useLocation();
-    
+
     const { userInput } = state;
+    const { INDEX_PAGE_URL } = pagesConstants;
+    const { errorMessages, errorCodes, successCodes } = errorConstants;
+    const { invalidSymbolErrorText, invalidTargetAvgCostErrorText } = errorMessages;
 
     const round = (val, precision) => {
         let places = Math.pow(10, precision);
@@ -56,12 +61,12 @@ const Quote = () => {
             },
             errors: {
                 targetAvgCost: true,
-                targetAvgCostErrorText: 'Target Average Cost must be between the latest price and Current Average Cost.',
+                targetAvgCostErrorText: invalidTargetAvgCostErrorText,
             },
             edit: true,
         };
 
-        navigate(HOME_PAGE_URL, { state });
+        navigate(INDEX_PAGE_URL, { state });
     }
 
     const redirectInvalidTickerSymbol = () => {
@@ -71,12 +76,12 @@ const Quote = () => {
             },
             errors: {
                 symbol: true,
-                symbolErrorText: 'Symbol not found. Please select an option from the dropdown as you type.',
+                symbolErrorText: invalidSymbolErrorText,
             },
             edit: true,
         };
 
-        navigate(HOME_PAGE_URL, { state });
+        navigate(INDEX_PAGE_URL, { state });
     }
 
     const redirectEditFormRequest = (event) => {
@@ -89,13 +94,13 @@ const Quote = () => {
             edit: true,
         };
 
-        navigate(HOME_PAGE_URL, { state });
+        navigate(INDEX_PAGE_URL, { state });
     }
 
     const redirectToHome = (event) => {
         event.preventDefault();
 
-        navigate(HOME_PAGE_URL);
+        navigate(INDEX_PAGE_URL);
     }
 
     const fetchAndUpdateAirtableRecords = async () => {
@@ -178,7 +183,7 @@ const Quote = () => {
         }
 
         if (stockData) { 
-            if (stockData.statusCode === 200) {
+            if (stockData.statusCode === successCodes.OK_CODE) {
                 const { latestPrice } = stockData;
                 const newCash = (userInput.newEquityOption === "CA") ? parseInt(userInput.cash, 10) : parseInt(userInput.newShares, 10) * latestPrice;
                 const shares = parseInt(userInput.shares, 10);
@@ -210,7 +215,7 @@ const Quote = () => {
                     }
                 }
             }
-            else if (stockData.statusCode === 404) {
+            else if (stockData.statusCode === errorCodes.INVALID_TICKER_SYMBOL_ERROR_CODE) {
                 redirectInvalidTickerSymbol();
             }
         }

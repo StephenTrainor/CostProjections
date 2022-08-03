@@ -4,31 +4,14 @@ import { TextField, Button, Box, MenuItem } from '@mui/material';
 
 import CustomFormatTextField from '../components/CustomFormatTextField';
 import AutoCompleteField from '../components/AutoCompleteField';
-import Footer from '../components/Footer';
+import ApiLink from '../components/ApiLink';
 import styles from './Pages.module.css';
 
-const requiredFieldErrorText = "Required Field";
-const calculationOptions = [
-  {
-    value: 'DCAP',
-    label: 'Dollar Cost Average Projection',
-  },
-  {
-    value: 'CNP',
-    label: 'Cash Needed Projection',
-  },
-];
+import { pagesConstants, errorConstants } from '../AppConstants';
 
-const newEquityOptions = [
-  {
-    value: 'CA',
-    label: 'Cash Available',
-  },
-  {
-    value: 'NS',
-    label: 'New Shares',
-  },
-];
+const { dropdownOptions, defaultProps} = pagesConstants.homePage;
+const { requiredFieldErrorText, positiveValueRequiredErrorText } = errorConstants.errorMessages;
+const { calculationOptions, newEquityOptions } = dropdownOptions;
 
 const Home = (props) => {
   const navigate = useNavigate();
@@ -53,7 +36,7 @@ const Home = (props) => {
       setErrors({
         ...errors,
         [key]: true,
-        [errorText]: 'Must be a positive value',
+        [errorText]: positiveValueRequiredErrorText,
       })
     } 
     else {
@@ -67,14 +50,16 @@ const Home = (props) => {
   }
 
   const updateInputValues = (event) => {
-    const newInputValue = event.target.value.replaceAll("$", "").replaceAll(",", "").replaceAll(".", "");
+    const { value } = event.target;
+
+    const newInputValue = value.replaceAll("$", "").replaceAll(",", "").replaceAll(".", "");
     
     setUserInputValues({
       ...userInputValues,
       [event.target.name]: newInputValue,
     });
 
-    if (!event.target.value) {
+    if (!value) {
       setErrors({
         ...errors,
         [event.target.name]: true,
@@ -93,8 +78,9 @@ const Home = (props) => {
     event.preventDefault();
 
     let emptyInputField = false;
-    for (let [key, value] of Object.entries(userInputValues)) {
-      if (value) { continue; }
+    
+    for (let [key, value] of Object.entries(userInputValues)) { // checking for empty input fields
+      if (value) { continue; } // skip if a value is present in the input field
       if (userInputValues.option === "CNP" && (key === "cash" || key === "newShares")) { continue; }
       if (userInputValues.option === "DCAP") {
         if (key === "targetAvgCost") { continue; }
@@ -249,8 +235,8 @@ const Home = (props) => {
             </Button>
           </div>
           <footer>
-            <Footer />
-            <Footer href="https://polygon.io" linkText="Tickers Provided by Polygon" />
+            <ApiLink />
+            <ApiLink href="https://polygon.io" linkText="Tickers Provided by Polygon" />
           </footer>
         </Box>
       </div>
@@ -259,30 +245,7 @@ const Home = (props) => {
 }
 
 Home.defaultProps = {
-  userInput: {
-    option: 'DCAP',
-    newEquityOption: 'CA',
-    symbol: '',
-    shares: '',
-    avgCost: '',
-    cash: '',
-    targetAvgCost: '',
-    newShares: '',
-  },
-  errors: {
-    symbol: false,
-    symbolErrorText: '',
-    shares: false,
-    sharesErrorText: '',
-    avgCost: false,
-    avgCostErrorText: '',
-    cash: false,
-    cashErrorText: '',
-    targetAvgCost: false,
-    targetAvgCostErrorText: '',
-    newShares: false,
-    newSharesErrorText: '',
-  },
+  ...defaultProps
 };
 
 export default Home;

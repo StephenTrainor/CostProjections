@@ -1,14 +1,17 @@
 import ReactApexChart from 'react-apexcharts';
-import useWindowDimensions from '../hooks/useWindowDimensions';
+
+import getDeviceDimensions from '../hooks/getDeviceDimensions';
+import { componentsConstants } from "../AppConstants";
+
+const { colors, chartSizes, chartConfigurations } = componentsConstants;
 
 const GainLossStackedApexChart = (props) => {
-    const { height: deviceHeight, width: deviceWidth } = useWindowDimensions();
+    const { height: deviceHeight, width: deviceWidth } = getDeviceDimensions();
     const { symbol, losingPositions, gainingPositions } = props.currentAirtableRecord.fields;
-    
-    const minDeviceWidth = 180;
-    const minDeviceHeight = 120;
 
-    const lightColor = '#ffffff'
+    const { minimumChartWidth, minimumMediumChartHeight } = chartSizes;
+    const { defaultLightColor, losingPositionColor, winningPositionsColor } = colors;
+    const { tooltipTheme, legendAlign, titleAlign, titleFontSize, fillOpacity } = chartConfigurations;
 
     const state = {
         series: [{
@@ -20,10 +23,10 @@ const GainLossStackedApexChart = (props) => {
             data: [losingPositions]
         }],
         options: {
-            colors: ['#16c25d', '#e12f2f'],
+            colors: [winningPositionsColor, losingPositionColor],
             chart: {
-                height: minDeviceHeight + deviceHeight / 14,
-                width: minDeviceWidth + deviceWidth / 3,
+                height: minimumMediumChartHeight + deviceHeight / 14,
+                width: minimumChartWidth + deviceWidth / 3,
                 type: 'bar',
                 stacked: true,
                 stackType: '100%'
@@ -35,33 +38,33 @@ const GainLossStackedApexChart = (props) => {
             },
             stroke: {
                 width: 0.7,
-                color: ['#fff']
+                color: [defaultLightColor]
             },
             title: {
                 text: `${symbol.toUpperCase()} Win-Loss Percentages`,
-                align: 'center',
+                align: titleAlign,
                 style: {
-                    fontSize: '18px',
-                    color: lightColor
+                    fontSize: titleFontSize,
+                    color: defaultLightColor
                 }
             },
             xaxis: {
                 categories: [symbol.toUpperCase()],
                 labels: {
                     style: {
-                        colors: lightColor
+                        colors: defaultLightColor
                     }
                 }
             },
             yaxis: {
                 labels: {
                     style: {
-                        colors: lightColor
+                        colors: defaultLightColor
                     }
                 }
             },
             tooltip: {
-                theme: 'dark',
+                theme: tooltipTheme,
                 y: {
                     formatter: function (val) {
                         return val + " positions"
@@ -69,13 +72,12 @@ const GainLossStackedApexChart = (props) => {
                 }
             },
             fill: {
-                opacity: 0.9
+                opacity: fillOpacity
             },
             legend: {
-                position: 'bottom',
-                horizontalAlign: 'center',
+                align: legendAlign,
                 labels: {
-                    colors: lightColor
+                    colors: defaultLightColor
                 }
             }
         }

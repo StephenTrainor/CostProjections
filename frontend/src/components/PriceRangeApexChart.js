@@ -1,22 +1,20 @@
 import ReactApexChart from 'react-apexcharts';
-import useWindowDimensions from '../hooks/useWindowDimensions';
+
+import getDeviceDimensions from '../hooks/getDeviceDimensions';
+import { componentsConstants } from "../AppConstants";
+
+const { colors, chartSizes, chartConfigurations } = componentsConstants;
 
 const PriceRangeApexChart = (props) => {
-    const { height: deviceHeight, width: deviceWidth } = useWindowDimensions();
+    const { height: deviceHeight, width: deviceWidth } = getDeviceDimensions();
     const { calculation, latestPrice } = props;
     const { option, symbol } = props.state;
     const avgCost = parseInt(props.state.avgCost, 10);
     const targetAvgCost = parseInt(props.state.targetAvgCost, 10);
 
-    const minChartWidth = 180;
-    const minChartHeight = 100;
-
-    const previousAvgColor = '#808080';
-    const newAvgColor = '#58bc08';
-    const latestPriceColor = '#a0a0a0';
-    const rangeColor = '#f0ffff';
-
-    const lightColor = "#ffffff";
+    const { tooltipTheme, legendAlign } = chartConfigurations;
+    const { minimumChartWidth, minimumSmallChartHeight } = chartSizes;
+    const { defaultLightColor, latestPriceColor, previousAvgColor, newAvgColor, rangeColor} = colors;
 
     const state = {
         series: [{
@@ -54,20 +52,20 @@ const PriceRangeApexChart = (props) => {
                 max: ((avgCost >= latestPrice) ? avgCost : latestPrice) + (Math.abs(latestPrice - avgCost) * 0.1),
                 labels: {
                     style: {
-                        colors: lightColor
+                        colors: defaultLightColor
                     }
                 }
             },
             yaxis: {
                 labels: {
                     style: {
-                        colors: lightColor
+                        colors: defaultLightColor
                     }
                 }
             },
             chart: {
-                height: minChartHeight + deviceHeight / 13.34,
-                width: minChartWidth + deviceWidth / 3,
+                height: minimumSmallChartHeight + deviceHeight / 13.34,
+                width: minimumChartWidth + deviceWidth / 3,
                 type: 'rangeBar',
             },
             plotOptions: {
@@ -77,6 +75,7 @@ const PriceRangeApexChart = (props) => {
             },
             colors: [rangeColor],
             legend: {
+                align: legendAlign,
                 show: true,
                 showForSingleSeries: true,
                 customLegendItems: ['Price Range', 'Previous Average Cost', 'Latest Price', 'New Average Cost'],
@@ -84,11 +83,11 @@ const PriceRangeApexChart = (props) => {
                         fillColors: [rangeColor, previousAvgColor, latestPriceColor, newAvgColor]
                 },
                 labels: {
-                    colors: lightColor
+                    colors: defaultLightColor
                 }
             },
             tooltip: {
-                theme: 'dark'
+                theme: tooltipTheme
             }
         },
     };

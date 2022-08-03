@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { apiConstants } from '../AppConstants';
 
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL ?? "http://127.0.0.1:9000";
+const { BACKEND_BASE_URL } = apiConstants;
 
 const fetchStockData = async (tickerSymbol) => {
     const STOCK_QUOTE_URL = `${BACKEND_BASE_URL}/quote/${tickerSymbol}`;

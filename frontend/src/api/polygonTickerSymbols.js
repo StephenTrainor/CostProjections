@@ -1,6 +1,8 @@
 import axios from 'axios';
+import { apiConstants, errorConstants } from '../AppConstants';
 
-const BACKEND_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL ?? "http://127.0.0.1:9000";
+const { BACKEND_BASE_URL} = apiConstants;
+const { TOO_MANY_REQUESTS_ERROR_CODE } = errorConstants.errorCodes;
 
 const fetchTickerSymbols = async (enteredSymbol) => {
     const backendTickerSymbolsApiUrl = `${BACKEND_BASE_URL}/symbol/${enteredSymbol}`;
@@ -10,7 +12,7 @@ const fetchTickerSymbols = async (enteredSymbol) => {
 
         return getTickerSymbolsResponse.data;
     } catch (error) {
-        if (error.response.status !== 429) {
+        if (error.response.status !== TOO_MANY_REQUESTS_ERROR_CODE) {
             return {
                 statusCode: error.response.status,
                 statusMessage: error.response.statusText,

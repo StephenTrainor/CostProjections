@@ -1,14 +1,17 @@
 import ReactApexChart from "react-apexcharts";
-import useWindowDimensions from '../hooks/useWindowDimensions';
+
+import getDeviceDimensions from '../hooks/getDeviceDimensions';
+import { componentsConstants } from "../AppConstants";
+
+const { colors, chartSizes, chartConfigurations } = componentsConstants;
 
 const AllTimeVisitsApexChart = (props) => {
-    const { height: deviceHeight, width: deviceWidth } = useWindowDimensions();
     const { airtableRecords }  = props;
+    const { height: deviceHeight, width: deviceWidth } = getDeviceDimensions();
 
-    const minChartWidth = 180;
-    const minChartHeight = 200;
-
-    const lightColor = '#ffffff';
+    const { minimumChartWidth, minimumLargeChartHeight } = chartSizes;
+    const { defaultLightColor, losingPositionColor, winningPositionsColor } = colors;
+    const { tooltipTheme, legendAlign, titleAlign, titleFontSize, fillOpacity } = chartConfigurations;
 
     const state = {
         series: [{
@@ -20,11 +23,11 @@ const AllTimeVisitsApexChart = (props) => {
             data: []
         }],
         options: {
-            colors: ['#e12f2f', '#16c25d'],
+            colors: [losingPositionColor, winningPositionsColor],
             chart: {
                 type: 'bar',
-                height: minChartHeight + deviceHeight / 8,
-                width: minChartWidth + deviceWidth / 3,
+                height: minimumLargeChartHeight + deviceHeight / 8,
+                width: minimumChartWidth + deviceWidth / 3,
                 stacked: true,
                 toolbar: {
                     show: true
@@ -42,37 +45,36 @@ const AllTimeVisitsApexChart = (props) => {
                 categories: [],
                 labels: {
                     style: {
-                        colors: lightColor
+                        colors: defaultLightColor
                     }
                 }
             },
             yaxis: {
                 labels: {
                     style: {
-                        colors: lightColor
+                        colors: defaultLightColor
                     }
                 }
             },
             title: {
                 text: 'Most Visited Stocks',
-                align: 'center',
+                align: titleAlign,
                 style: {
-                    fontSize: '18px',
-                    color: lightColor
+                    fontSize: titleFontSize,
+                    color: defaultLightColor
                 }
             },
             legend: {
-                positions: 'bottom',
-                align: 'center',
+                align: legendAlign,
                 labels: {
-                    colors: lightColor
+                    colors: defaultLightColor
                 }
             },
             fill: {
-                opacity: 0.9
+                opacity: fillOpacity
             },
             tooltip: {
-                theme: 'dark',
+                theme: tooltipTheme,
             }
         }
     };

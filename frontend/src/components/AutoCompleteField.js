@@ -1,11 +1,11 @@
-import {
-  Autocomplete,
-  TextField
-} from '@mui/material';
 import { useState, useEffect } from 'react';
+import { Autocomplete, TextField } from '@mui/material';
+
+import { errorConstants } from '../AppConstants';
 import { fetchTickerSymbols } from '../api/polygonTickerSymbols';
 
-const requiredFieldErrorText = "Required Field";
+const { requiredFieldErrorText } = errorConstants.errorMessages;
+const { OK_STRING } = errorConstants.successCodes;
 
 const AutoCompleteField = (props) => {
     const [tickerSymbols, setTickerSymbols] = useState();
@@ -42,7 +42,7 @@ const AutoCompleteField = (props) => {
     }, [setPreviousTickerSymbol, tickerSymbols, previousTickerSymbol, enteredSymbol]);
 
     useEffect(() => {
-        if (!tickerSymbols || (tickerSymbols && tickerSymbols.status !== "OK")) {return};
+        if (!tickerSymbols || (tickerSymbols && tickerSymbols.status !== OK_STRING)) {return};
 
         setFullCompanyNames(
             tickerSymbols.results.map((result) => (
