@@ -1,13 +1,13 @@
 import ReactApexChart from "react-apexcharts";
 
-import getDeviceDimensions from '../hooks/getDeviceDimensions';
+import useDeviceDimensions from '../hooks/useDeviceDimensions';
 import { componentsConstants } from "../AppConstants";
 
 const { colors, chartSizes, chartConfigurations } = componentsConstants;
 
 const AllTimeVisitsApexChart = (props) => {
     const { airtableRecords }  = props;
-    const { height: deviceHeight, width: deviceWidth } = getDeviceDimensions();
+    const { height: deviceHeight, width: deviceWidth } = useDeviceDimensions();
 
     const { minimumChartWidth, minimumLargeChartHeight } = chartSizes;
     const { defaultLightColor, losingPositionColor, winningPositionsColor } = colors;

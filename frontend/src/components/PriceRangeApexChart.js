@@ -1,12 +1,12 @@
 import ReactApexChart from 'react-apexcharts';
 
-import getDeviceDimensions from '../hooks/getDeviceDimensions';
+import useDeviceDimensions from '../hooks/useDeviceDimensions';
 import { componentsConstants } from "../AppConstants";
 
 const { colors, chartSizes, chartConfigurations } = componentsConstants;
 
 const PriceRangeApexChart = (props) => {
-    const { height: deviceHeight, width: deviceWidth } = getDeviceDimensions();
+    const { height: deviceHeight, width: deviceWidth } = useDeviceDimensions();
     const { calculation, latestPrice } = props;
     const { option, symbol } = props.state;
     const avgCost = parseInt(props.state.avgCost, 10);

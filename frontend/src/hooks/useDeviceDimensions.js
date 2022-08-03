@@ -9,7 +9,7 @@ const getDeviceWidthAndHeight = () => {
     };
 };
 
-const getDeviceDimensions = () => {
+const useDeviceDimensions = () => {
     const [windowDimensions, setWindowDimensions] = useState(getDeviceWidthAndHeight());
 
     useEffect(() => {
@@ -24,4 +24,4 @@ const getDeviceDimensions = () => {
     return windowDimensions;
 };
 
-export default getDeviceDimensions;
+export default useDeviceDimensions;

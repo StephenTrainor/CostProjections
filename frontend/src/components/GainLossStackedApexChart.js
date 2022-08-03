@@ -1,12 +1,12 @@
 import ReactApexChart from 'react-apexcharts';
 
-import getDeviceDimensions from '../hooks/getDeviceDimensions';
+import useDeviceDimensions from '../hooks/useDeviceDimensions';
 import { componentsConstants } from "../AppConstants";
 
 const { colors, chartSizes, chartConfigurations } = componentsConstants;
 
 const GainLossStackedApexChart = (props) => {
-    const { height: deviceHeight, width: deviceWidth } = getDeviceDimensions();
+    const { height: deviceHeight, width: deviceWidth } = useDeviceDimensions();
     const { symbol, losingPositions, gainingPositions } = props.currentAirtableRecord.fields;
 
     const { minimumChartWidth, minimumMediumChartHeight } = chartSizes;
