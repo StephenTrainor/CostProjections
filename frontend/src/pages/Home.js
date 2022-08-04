@@ -146,23 +146,19 @@ const Home = (props) => {
           <div className={styles.userInputContainer}>
             <CustomFormatTextField 
               onChange={validatePositiveInputValue}
-              value={userInputValues.shares}
+              userInputValues={userInputValues}
+              errors={errors}
               label="Shares Owned"
-              name="shares"
-              id="shares"
-              error={errors.shares}
-              helperText={errors.sharesErrorText || ((errors.shares) ? requiredFieldErrorText : '')}
+              field="shares"
             />
           </div>
           <div className={styles.userInputContainer}>
             <CustomFormatTextField
               onChangeFunction={validatePositiveInputValue}
-              value={userInputValues.avgCost}
+              userInputValues={userInputValues}
+              errors={errors}
               label="Average Cost Per Share"
-              name="avgCost"
-              id="avgCost"
-              error={errors.avgCost}
-              helperText={errors.avgCostErrorText || ((errors.avgCost) ? requiredFieldErrorText : '')}
+              field="avgCost"
               prefix="$"
             />
           </div>
@@ -188,12 +184,10 @@ const Home = (props) => {
               <div className={styles.userInputContainer}>
                 <CustomFormatTextField 
                   onChangeFunction={validatePositiveInputValue}
-                  value={userInputValues.cash}
+                  userInputValues={userInputValues}
+                  errors={errors}
                   label="Cash Available"
-                  name="cash"
-                  id="cash"
-                  erorr={errors.cash}
-                  helperText={errors.cashErrorText || ((errors.cash) ? requiredFieldErrorText : '')}
+                  field="cash"
                   prefix="$"
                 />
               </div>
@@ -201,12 +195,10 @@ const Home = (props) => {
               <div className={styles.userInputContainer}>
                 <CustomFormatTextField 
                   onChangeFunction={validatePositiveInputValue}
-                  value={userInputValues.newShares}
                   label="New Shares"
-                  name="newShares"
-                  id="newShares"
-                  error={errors.newShares}
-                  helperText={errors.newSharesErrorText || ((errors.newShares) ? requiredFieldErrorText : '')}
+                  userInputValues={userInputValues}
+                  errors={errors}
+                  field="newShares"
                 />
               </div>
             )}
@@ -215,12 +207,10 @@ const Home = (props) => {
             <div className={styles.userInputContainer}>
               <CustomFormatTextField 
                 onChange={validatePositiveInputValue}
-                value={userInputValues.targetAvgCost}
+                userInputValues={userInputValues}
+                errors={errors}
                 label="Target Average Cost"
-                name="targetAvgCost"
-                id="targetAvgCost"
-                error={errors.targetAvgCost}
-                helperText={(state && state.targetErrorText) ? errors.targetAvgCostErrorText : ((errors.targetAvgCost) ? requiredFieldErrorText : '')}
+                field="targetAvgCost"
                 prefix="$"
               />
             </div>
