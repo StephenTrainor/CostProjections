@@ -70,6 +70,10 @@ footer {
   align-items: center;
 }
 
+.removeBold {
+  font-weight: normal;
+}
+
 @media (max-width: 768px) {
   h1 {
     font-size:24px;

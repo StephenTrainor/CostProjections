@@ -33,9 +33,3 @@ const App = () => {
 }
 
 export default App;
-
-/*
-destructure input field props
-simplify input fields
-fix a lot of logic
-*/

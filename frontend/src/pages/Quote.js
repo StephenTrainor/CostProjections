@@ -26,6 +26,8 @@ const Quote = () => {
     const [updatedAirtableRecords, setUpdatedAirtableRecords] = useState(false);
     const [currentAirtableRecord, setCurrentAirtableRecord] = useState();
     const [airtableRecords, setAirtableRecords] = useState();
+    const [projectedProfitLoss, setProjectedProfitLoss] = useState(0);
+    const [previousProfitLoss, setPreviousProfitLoss] = useState(0);
     const [avgCostChange, setAvgCostChange] = useState(0);
     const [calculation, setCalculation] = useState(0);
     const [stockData, setStockData] = useState();
@@ -197,6 +199,7 @@ const Quote = () => {
 
                     const newAverageCost = (currentTotalValue + newCash) / totalShares;
 
+                    setProjectedProfitLoss(((latestPrice / newAverageCost) - 1) * 100);
                     setAvgCostChange(newAverageCost - avgCost);
                     setCalculation(newAverageCost);
                 }
@@ -207,6 +210,7 @@ const Quote = () => {
 
                         const sharesNeeded = (denominator === 0) ? 0 : numerator / denominator;
 
+                        setProjectedProfitLoss(((latestPrice / targetAvgCost) - 1) * 100);
                         setAvgCostChange(latestPrice - avgCost);
                         setCalculation(sharesNeeded);
                     }
@@ -214,6 +218,8 @@ const Quote = () => {
                         redirectInvalidTargetAvgCost();
                     }
                 }
+
+                setPreviousProfitLoss(((latestPrice / avgCost) - 1) * 100); // convert to percentage
             }
             else if (stockData.statusCode === errorCodes.INVALID_TICKER_SYMBOL_ERROR_CODE) {
                 redirectInvalidTickerSymbol();
@@ -265,6 +271,13 @@ const Quote = () => {
                                     postText={` or ${round(calculation, 4)} shares at the current price of $${(stockData) ? round(stockData.latestPrice, 2) : 0}`}
                                 />
                         }
+                    </div>
+                </div>
+                <div className={styles.centeredContainer}>
+                    <div className={styles.textDescription}>
+                        <h3 className={styles.removeBold}>
+                            {`Your ${(avgCostChange < 0) ? "losses" : "profits"} would change from ${(avgCostChange < 0) ? "" : "+"}${round(previousProfitLoss, 2)}% to ${(avgCostChange < 0) ? "" : "+"}${round(projectedProfitLoss, 2)}%`}
+                        </h3>
                     </div>
                 </div>
             </div>
