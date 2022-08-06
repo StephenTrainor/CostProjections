@@ -127,7 +127,7 @@ const Quote = () => {
                 gainingPositions,
             } = airtableRecord.fields;
 
-            if (symbol === userInput.symbol) {
+            if (symbol === userInput.symbol.toUpperCase()) {
                 setCurrentAirtableRecord({
                     "id": id,
                     "fields": {
