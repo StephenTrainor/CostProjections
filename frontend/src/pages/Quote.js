@@ -186,11 +186,15 @@ const Quote = () => {
 
         if (stockData) { 
             if (stockData.statusCode === successCodes.OK_CODE) {
+                for (const [key, value] of Object.entries(userInput)) {
+                    userInput[key] = value.replaceAll("$", "").replaceAll(",", "");
+                };
+
                 const { latestPrice } = stockData;
-                const newCash = (userInput.newEquityOption === "CA") ? parseInt(userInput.cash, 10) : parseInt(userInput.newShares, 10) * latestPrice;
-                const shares = parseInt(userInput.shares, 10);
-                const avgCost = parseInt(userInput.avgCost, 10);
-                const targetAvgCost = parseInt(userInput.targetAvgCost, 10);
+                const newCash = (userInput.newEquityOption === "CA") ? parseFloat(userInput.cash) : parseFloat(userInput.newShares) * latestPrice;
+                const shares = parseFloat(userInput.shares);
+                const avgCost = parseFloat(userInput.avgCost);
+                const targetAvgCost = parseFloat(userInput.targetAvgCost);
 
                 if (userInput.option === "DCAP") {
                     const currentTotalValue = shares * avgCost;

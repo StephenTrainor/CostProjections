@@ -52,7 +52,7 @@ const Home = (props) => {
   const updateInputValues = (event) => {
     const { value } = event.target;
 
-    const newInputValue = value.replaceAll("$", "").replaceAll(",", "").replaceAll(".", "");
+    const newInputValue = value;//.replaceAll("$", "").replaceAll(",", "").replaceAll(".", "");
     
     setUserInputValues({
       ...userInputValues,
